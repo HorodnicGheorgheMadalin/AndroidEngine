@@ -15,13 +15,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SoL">
+        <activity android:name="com.hgm.androidengine.SoL" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GameUpdate" android:noHistory="true"></activity>
-        <activity android:name=".GameEngine"></activity>
+        <activity android:name="com.hgm.androidengine.GameUpdate" android:noHistory="true"></activity>
+        <activity android:name="com.hgm.androidengine.GameEngine"></activity>
     </application>
 </manifest>
