@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.hgm.androidengine.OpenGLGameView
+        android:id="@+id/game_engine_GL_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="27dp"
+        android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+    <Button
+        android:id="@+id/button_set_min_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/set_min_filter"
+        app:layout_constraintBottom_toBottomOf="@+id/game_engine_GL_view"
+        app:layout_constraintStart_toStartOf="@+id/game_engine_GL_view" />
+
+    <Button
+        android:id="@+id/button_set_mag_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/set_mag_filter"
+        app:layout_constraintBottom_toBottomOf="@+id/game_engine_GL_view"
+        app:layout_constraintEnd_toEndOf="@+id/game_engine_GL_view" />
+
+</android.support.constraint.ConstraintLayout>
