@@ -41,10 +41,11 @@ public class SolClientHandler extends Handler {
     }
 
     if(clientObject instanceof AuthenticatorToken){
-      int returnedvalue = ((AuthenticatorToken) clientObject).getUserID();
+      int returnedValue = ((AuthenticatorToken) clientObject).getUserID();
     }
   }
 
+  //  TODO (Madalin) - the connection dose not work, when sending a copy of the socket down stream
   public static void sendToServer(Object object){
     SolClientSenderThread sendGameChange = new SolClientSenderThread(SolClientConnectionThread.socket, object);
     sendGameChange.start();

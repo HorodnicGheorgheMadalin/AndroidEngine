@@ -9,7 +9,9 @@ import java.net.UnknownHostException;
 
 public class SolClientConnectionThread extends Thread {
   private final int SERVER_PORT = 5056;
-  private final String SERVER_HOSTNAME = "192.168.100.101";
+  //  TODO (Madalin) Take out debug server
+  private final String SERVER_HOSTNAME = "127.0.0.1";
+  //private final String SERVER_HOSTNAME = "192.168.100.101";
 
   private int userID;
   private String userName;
