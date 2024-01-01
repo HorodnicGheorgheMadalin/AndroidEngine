@@ -9,7 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-//  TODO(Madalin) : Fix Crash on Orientation Change.
+//  TODO(Madalin) : - Fix Crash on Orientation Change.
+//                  - Fix texture for cubes.
 
 public class GameEngine extends Activity {
   private OpenGLRenderer mRenderer;
