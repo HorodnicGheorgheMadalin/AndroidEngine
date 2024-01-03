@@ -6,13 +6,16 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
+import com.hgm.solarSystem.SolarSystem;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class OpenGLRenderer implements GLSurfaceView.Renderer
 {
     private Context         m_context;
-    private Object3D mShip = null;
+    private Object3D        mShip = null;
+    private SolarSystem     solarSystem = null;
     private ShaderProgram   mShader;
     private float           mAngleInDegrades;
 
@@ -86,7 +89,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         setMagFilter(mQueuedMagFilter);
       }
 
-      mShip = new Object3D(m_context, "Cube_3.obj");
+      solarSystem = new SolarSystem(m_context);
+      mShip = new Object3D(m_context, "Cube_3.obj", com.hgm.androidengine.R.raw.iron_texture);
     }
 
     @Override

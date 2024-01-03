@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-class Object3D
+public class Object3D
 {
     // TODO : Deal with non repeating NORMALS in code
     // TODO : BUG Find out why not all textures are mapped correctly
@@ -29,6 +29,7 @@ class Object3D
 
     private boolean isLoaded;
     private int     mFacesNumber;
+    public  int     mTextureID;
     public  int     mTextureDataHandle;
 
     float mRotation;
@@ -60,8 +61,9 @@ class Object3D
     private static final int Z_INDEX            = 3;
 
 
-    Object3D(Context context, String strName)
+    public Object3D(Context context, String strName, int textureID)
     {
+        mTextureID = textureID;
         isLoaded = false;
         initObject(context, strName);
         mRotation = 0.0f;
@@ -202,7 +204,7 @@ class Object3D
         }
         cubeTexCoordinatesBuffer.position(0);
 
-        mTextureDataHandle = loadTexture(context, com.hgm.androidengine.R.raw.iron_texture);
+        mTextureDataHandle = loadTexture(context, mTextureID);
     }
 
     void draw(int positionHandle, int colorHandle, int normalHandle, int textureHandle)

@@ -143,8 +143,10 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
         if( areWeLogged == true )
         {
           Toast.makeText(getApplicationContext(), "Login success", Toast.LENGTH_SHORT).show();
-          Intent gameUpdate = new Intent (v.getContext(), GameUpdate.class);
-          startActivity(gameUpdate);
+          //Intent gameUpdate = new Intent (v.getContext(), GameUpdate.class)
+          // startActivity(gameUpdate);
+          Intent gameEngine = new Intent (getApplicationContext(), GameEngine.class);
+          startActivity(gameEngine);
         }
         else
         {

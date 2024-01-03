@@ -2,8 +2,6 @@ package com.hgm.comunication;
 
 import android.util.Log;
 
-import com.hgm.androidengine.BuildConfig;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -113,12 +111,7 @@ public class SolClient{
       // for localhost debugging
       //socket = new Socket("172.0.0.1", 5056);
       //  Create socket connection
-      if(BuildConfig.DEBUG) {
-        socket = new Socket(SERVER_LOCALHOST, SERVER_PORT);
-      }
-      else {
-        socket = new Socket(SERVER_HOSTNAME, SERVER_PORT);
-      }
+      socket = new Socket(SERVER_HOSTNAME, SERVER_PORT);
       //  Get the data streams
       DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
       DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());

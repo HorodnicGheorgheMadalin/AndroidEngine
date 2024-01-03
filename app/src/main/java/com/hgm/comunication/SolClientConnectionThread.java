@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 public class SolClientConnectionThread extends Thread {
   private final int SERVER_PORT = 5056;
   //  TODO (Madalin) Take out debug server
-  //  NOTE(Madalin) The localhost cannot be used here since the localhost refers to the IP of the emulator and we need the actual
+  //  TODO (Madalin) The localhost cannot be used here since the localhost refers to the IP of the emulator and we need the actual
   //  IP of the host PC.
   private final String SERVER_HOSTNAME = "192.168.0.133";
   //private final String SERVER_HOSTNAME = "192.168.100.101";
