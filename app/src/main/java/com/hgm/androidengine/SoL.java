@@ -1,11 +1,8 @@
 package com.hgm.androidengine;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,7 +11,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.hgm.comunication.AuthenticatorToken;
-import com.hgm.comunication.SolClient;
 import com.hgm.comunication.SolClientConnectionThread;
 import com.hgm.comunication.SolClientHandler;
 
@@ -34,13 +30,12 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
     public static SolClientConnectionThread clientConnection;
     private static boolean areWeLogged = false;
 
-    private static Handler progressHandler;
-
-    private Button m_loginButton;
     private EditText m_userName;
     private EditText m_userPassword;
 
-   SolClient client;
+    private EditText m_userEMail;
+
+    String m_strUserName, m_strEMail, m_strPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,7 +56,7 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
         clientConnection.start();
 
         if(savedInstanceState == null ){
-
+            Log.d(TAG, "NULL saved Instance State");
         }
     }
 
@@ -88,9 +83,16 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
       areWeLogged = state;
     }
 
+    public void login(View view)
+    {
+        m_strUserName =  m_userName.getText().toString();
+        m_strEMail = m_userEMail.getText().toString();
+        m_strPassword = m_userPassword.getText().toString();
+    }
+
     private void setUpControls() {
 
-      m_loginButton = findViewById(R.id.login);
+        Button m_loginButton = findViewById(R.id.login);
       m_loginButton.setOnClickListener(this);
 
       m_userName = findViewById(R.id.user_name);
@@ -98,15 +100,17 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
 
       m_userPassword = findViewById(R.id.user_password);
       m_userPassword.setOnClickListener(this);
+
+      m_userEMail = findViewById(R.id.editTextTextEmailAddress);
+      m_userEMail.setOnClickListener(this);
     }
 
   public void onClick(View v) {
     switch(v.getId())
     {
-      case R.id.login:
+      case (R.id.login):
       {
         Log.d(TAG, "Clicked Login Button");
-        progressHandler = new Handler(Looper.getMainLooper());
         m_LoginAttempts++;
 
         if(m_LoginAttempts >= MAX_LOGIN_ATTEMPTS)
@@ -127,8 +131,8 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
           //  client = connection.execute(auth);
           if(clientHandler == null)
             clientHandler = new SolClientHandler();
-          if(clientHandler != null )
-            clientHandler.sendToServer(auth);
+
+          SolClientHandler.sendToServer(auth);
         } catch (Exception e){
           e.printStackTrace();
         }
@@ -140,7 +144,7 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
         }
 
         Log.d(TAG, "Authentication Result : " + areWeLogged);
-        if( areWeLogged == true )
+        if( areWeLogged)
         {
           Toast.makeText(getApplicationContext(), "Login success", Toast.LENGTH_SHORT).show();
           //Intent gameUpdate = new Intent (v.getContext(), GameUpdate.class)
@@ -154,39 +158,34 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
           Toast.makeText(getApplicationContext(), m_userName.getText().toString(), Toast.LENGTH_SHORT).show();
           Toast.makeText(getApplicationContext(), m_userPassword.getText().toString(), Toast.LENGTH_SHORT).show();
         }
+
+        login(v);
+
         break;
       }
 
-      case R.id.button_set_mag_filter:
+      case (R.id.button_set_mag_filter):
       {
         new AlertDialog.Builder(SoL.this)
           .setTitle("Mag Filter")
           .setMessage("MAG Filter Set")
-          .setPositiveButton("OK", new DialogInterface.OnClickListener()
-          {
-            public void onClick(DialogInterface dialog, int id)
-            {
-              //setMinSetting(MAG_DIALOG);
-              Toast.makeText(getApplicationContext(), "MAG button pressed", Toast.LENGTH_SHORT ).show();
-              //dialog.cancel();
-            }
+          .setPositiveButton("OK", (dialog, id) -> {
+            //setMinSetting(MAG_DIALOG);
+            Toast.makeText(getApplicationContext(), "MAG button pressed", Toast.LENGTH_SHORT ).show();
+            //dialog.cancel();
           }).show();
         break;
       }
 
-      case R.id.button_set_min_filter:
+      case (R.id.button_set_min_filter):
       {
         new AlertDialog.Builder(SoL.this)
           .setTitle("Min Filter")
           .setMessage("MIN Filter Set")
-          .setPositiveButton("OK", new DialogInterface.OnClickListener()
-          {
-            public void onClick(DialogInterface dialog, int id)
-            {
-              //setMinSetting(MIN_DIALOG);
-              Toast.makeText(getApplicationContext(), "MIN button pressed", Toast.LENGTH_SHORT ).show();
-              dialog.cancel();
-            }
+          .setPositiveButton("OK", (dialog, id) -> {
+            //setMinSetting(MIN_DIALOG);
+            Toast.makeText(getApplicationContext(), "MIN button pressed", Toast.LENGTH_SHORT ).show();
+            dialog.cancel();
           }).show();
         break;
       }

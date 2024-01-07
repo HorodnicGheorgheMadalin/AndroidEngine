@@ -42,6 +42,7 @@ public class SolClientHandler extends Handler {
 
     if(clientObject instanceof AuthenticatorToken){
       int returnedValue = ((AuthenticatorToken) clientObject).getUserID();
+      Log.d(TAG, "returnedValue:" + returnedValue);
     }
   }
 
