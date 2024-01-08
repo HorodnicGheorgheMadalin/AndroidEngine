@@ -12,9 +12,9 @@
 
     <EditText
         android:id="@+id/user_name"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="5dp"
         android:autofillHints=""
         android:hint="@string/user"
         android:inputType="textVisiblePassword|text"
@@ -31,8 +31,9 @@
 
     <EditText
         android:id="@+id/user_password"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
+        android:layout_marginTop="5dp"
         android:autofillHints=""
         android:hint="@string/password"
         android:inputType="textPassword"
@@ -44,20 +45,20 @@
 
     <TextView
         android:id="@+id/text_user_name"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="20dp"
-        android:layout_marginTop="252dp"
+        android:layout_marginTop="160dp"
         android:text="@string/user_name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_user_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_width="150dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="5dp"
         android:text="@string/user_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -66,17 +67,17 @@
 
     <TextView
         android:id="@+id/text_user_eMail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User E-Mail :"
+        android:layout_width="150dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/user_eMail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.459"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_password" />
 
     <Button
         android:id="@+id/login"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginBottom="140dp"
         android:text="@string/Login"
@@ -88,13 +89,14 @@
 
     <EditText
         android:id="@+id/editTextTextEmailAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
         android:ems="10"
+        android:hint="@string/email_service_com"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.761"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_user_eMail" />
 
