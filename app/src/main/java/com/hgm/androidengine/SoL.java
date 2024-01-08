@@ -28,7 +28,8 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
 
     public static SolClientHandler clientHandler;
     public static SolClientConnectionThread clientConnection;
-    private static boolean areWeLogged = false;
+    //  TODO(Madalin)   - Remove skipp login.
+    private static boolean areWeLogged = true;
 
     private EditText m_userName;
     private EditText m_userPassword;
@@ -147,6 +148,7 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
         if( areWeLogged)
         {
           Toast.makeText(getApplicationContext(), "Login success", Toast.LENGTH_SHORT).show();
+          //    TODO(Madalin)  : add update context at startup
           //Intent gameUpdate = new Intent (v.getContext(), GameUpdate.class)
           // startActivity(gameUpdate);
           Intent gameEngine = new Intent (getApplicationContext(), GameEngine.class);

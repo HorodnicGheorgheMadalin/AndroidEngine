@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES32;
 import android.opengl.GLUtils;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -60,12 +62,15 @@ public class Object3D
     private static final int Y_INDEX            = 2;
     private static final int Z_INDEX            = 3;
 
+    private static final String FILE_EXTENSION_3D = ".obj";
+
 
     public Object3D(Context context, String strName, int textureID)
     {
         mTextureID = textureID;
         isLoaded = false;
-        initObject(context, strName);
+        String strFileName = strName + FILE_EXTENSION_3D;
+        initObject(context, strFileName);
         mRotation = 0.0f;
     }
 
@@ -86,6 +91,7 @@ public class Object3D
             scanner = new Scanner(context.getAssets().open(strFileName));
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d("SoL", "Exception opening: " + strFileName + " : " + e.toString() );
         }
 
         //  Loop trough the lines

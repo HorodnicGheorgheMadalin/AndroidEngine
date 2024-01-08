@@ -35,10 +35,8 @@ public class GameEngine extends Activity {
     //  Show some information to the user
     if(null == savedInstanceState)
     {
-      Toast.makeText(this , R.string.HELP, Toast.LENGTH_SHORT).show();
+      Toast.makeText(this , R.string.INVALID_INSTANCE_STATE, Toast.LENGTH_SHORT).show();
     }
-
-    Toast.makeText(this , R.string.HELP, Toast.LENGTH_SHORT).show();
 
     // Restore previous settings
     if (savedInstanceState != null)
@@ -81,7 +79,7 @@ public class GameEngine extends Activity {
     final boolean supportsES32 = configurationInfo.reqGlEsVersion >= 0x300000;
 
     //  TODO(Me)  The above code dose not work so we overwrite the output.
-    if(true)
+    if(mRendererView != null)
     {
       //  Request an OpenGL ES 3.2 compatible context
       mRendererView.setEGLContextClientVersion(3);
@@ -93,6 +91,7 @@ public class GameEngine extends Activity {
     {
       //  No compatible device is found so we will just exit
       //  We have no intention to create renderer that are compatible with openGL 1 or 2
+      Toast.makeText(this , R.string.INCOMPATIBLE_OPENGL_DEVICE, Toast.LENGTH_SHORT).show();
       return false;
     }
   }

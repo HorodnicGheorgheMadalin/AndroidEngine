@@ -90,7 +90,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       }
 
       solarSystem = new SolarSystem(m_context);
-      mShip = new Object3D(m_context, "Cube_3.obj", com.hgm.androidengine.R.raw.iron_texture);
+      mShip = new Object3D(m_context, "Cube_3", com.hgm.androidengine.R.raw.iron_texture);
     }
 
     @Override
