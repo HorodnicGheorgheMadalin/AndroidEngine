@@ -62,6 +62,8 @@ public class Object3D
     private static final int Y_INDEX            = 2;
     private static final int Z_INDEX            = 3;
 
+    private static final int N_INDEX            =4;
+
     private static final String FILE_EXTENSION_3D = ".obj";
 
 
@@ -153,7 +155,7 @@ public class Object3D
         for(String vertex: verticesList)
         {
             //  Fill vertices positions
-            String coordinates[] = vertex.split(" ");
+            String[] coordinates = vertex.split(" ");
             float x = Float.parseFloat(coordinates[X_INDEX]);
             float y = Float.parseFloat(coordinates[Y_INDEX]);
             float z = Float.parseFloat(coordinates[Z_INDEX]);
@@ -172,7 +174,7 @@ public class Object3D
         for( String normal : normalList)
         {
           //  Fill normal position
-          String normals[] = normal.split( " ");
+          String[] normals = normal.split( " ");
           float normal1 = Float.parseFloat(normals[X_INDEX]);
           float normal2 = Float.parseFloat(normals[Y_INDEX]);
           float normal3 = Float.parseFloat(normals[Z_INDEX]);
@@ -184,12 +186,15 @@ public class Object3D
         normalBuffer.position(0);
 
         //  Fill the faces
+        //  TODO(Madalin) : deal with complex faces that have textures and normals mapped
+        //      currently they are ignored. Ex: 1/2/3 2/3/4 4/5/6 6/5/4 per line
         for( String face: facesList)
         {
-            String vertexIndexes[] = face.split( " " );
+            String[] vertexIndexes = face.split( " " );
             short vertex1 = Short.parseShort(vertexIndexes[X_INDEX]);
             short vertex2 = Short.parseShort(vertexIndexes[Y_INDEX]);
             short vertex3 = Short.parseShort(vertexIndexes[Z_INDEX]);
+            //short normal = Short.parseShort(vertexIndexes[N_INDEX]);
             facesBuffer.put((short)(vertex1-1));
             facesBuffer.put((short)(vertex2-1));
             facesBuffer.put((short)(vertex3-1));
@@ -202,7 +207,7 @@ public class Object3D
         //  Fill the texture coordinate information
         for( String textureCoordinate: textureList)
         {
-            String textureIndexes[] = textureCoordinate.split( " " );
+            String[] textureIndexes = textureCoordinate.split( " " );
             float textureX = Float.parseFloat(textureIndexes[X_INDEX]);
             float textureY = Float.parseFloat(textureIndexes[Y_INDEX]);
             cubeTexCoordinatesBuffer.put(textureX);
@@ -213,7 +218,7 @@ public class Object3D
         mTextureDataHandle = loadTexture(context, mTextureID);
     }
 
-    void draw(int positionHandle, int colorHandle, int normalHandle, int textureHandle)
+    public void draw(int positionHandle, int colorHandle, int normalHandle, int textureHandle)
     {
         if(isLoaded)
         {

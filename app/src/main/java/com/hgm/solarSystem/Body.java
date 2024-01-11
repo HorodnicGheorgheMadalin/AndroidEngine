@@ -23,7 +23,7 @@ public class Body
     this.context = context;
     this.name = name;
     this.id = objectID;
-    object = new Object3D(context, name, R.raw.mercury_8k);
+    object = new Object3D(context, name, R.drawable.iron_texture);
     this.position = new V3( rand.nextDouble()*END_OF_SOLAR_SYSTEM, rand.nextDouble()*END_OF_SOLAR_SYSTEM, rand.nextDouble()*END_OF_SOLAR_SYSTEM );
   }
 
@@ -32,4 +32,10 @@ public class Body
     System.out.println( name + " : " + position.print() );
   }
 
+  public void draw(){
+    object.draw(0, 0, 0, 0);
+  }
+
 }
+
+

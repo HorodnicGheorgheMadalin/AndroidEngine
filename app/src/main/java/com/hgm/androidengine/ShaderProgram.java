@@ -15,7 +15,7 @@ import static android.content.ContentValues.TAG;
 class ShaderProgram
 {
   int m_programHandle;
-  private int m_pointProgramHandle;
+  private final int m_pointProgramHandle;
 
 
   ShaderProgram(Context context)

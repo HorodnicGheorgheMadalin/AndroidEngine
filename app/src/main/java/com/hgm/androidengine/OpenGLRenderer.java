@@ -13,9 +13,10 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class OpenGLRenderer implements GLSurfaceView.Renderer
 {
-    private Context         m_context;
+    private final Context   m_context;
+
+    private SolarSystem     mSystem = null;
     private Object3D        mShip = null;
-    private SolarSystem     solarSystem = null;
     private ShaderProgram   mShader;
     private float           mAngleInDegrades;
 
@@ -29,19 +30,19 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private final static int MATRIX_SIZE = 16;
 
     //  Used to transform the world space into ou eys
-    private float[] mViewMatrix                 = new float[MATRIX_SIZE];
+    private final float[] mViewMatrix                 = new float[MATRIX_SIZE];
     //  Used to project the scene into a 2D view port
-    private float[] mProjectionMatrix           = new float[MATRIX_SIZE];
+    private final float[] mProjectionMatrix           = new float[MATRIX_SIZE];
     //  Used to move models in world space
-    private float[] mModelMatrix                = new float[MATRIX_SIZE];
-    private float[] mModelViewMatrix            = new float[MATRIX_SIZE];
-    private float[] mModelViewProjectionMatrix  = new float[MATRIX_SIZE];
-    private float[] mLightModelMatrix           = new float[MATRIX_SIZE];
+    private final float[] mModelMatrix                = new float[MATRIX_SIZE];
+    private final float[] mModelViewMatrix            = new float[MATRIX_SIZE];
+    private final float[] mModelViewProjectionMatrix  = new float[MATRIX_SIZE];
+    private final float[] mLightModelMatrix           = new float[MATRIX_SIZE];
 
     //  The light position with a fourth filler coordinate needed for multiplication with transformation marice
-    private float[] mLightPosInModelSpace   = new float[] { 0.0f, 0.0f, 0.0f, 1.0f};
-    private float[] mLightPosInWorldSpace   = new float[4];
-    private float[] mLightPosInEyeSpace     = new float[4];
+    private final float[] mLightPosInModelSpace   = new float[] { 0.0f, 0.0f, 0.0f, 1.0f};
+    private final float[] mLightPosInWorldSpace   = new float[4];
+    private final float[] mLightPosInEyeSpace     = new float[4];
 
     float mDeltaX;
     float mDeltaY;
@@ -67,18 +68,20 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       GLES32.glBlendFunc(GLES32.GL_ONE, GLES32.GL_ONE);
       //GLES32.glBlendEquation(GLES32.GL_FUNC_ADD);
 
+      //  Set Camera
       setViewMatrix();
 
       //  Create Shader Program
       mShader = new ShaderProgram(m_context);
 
-      // Load the texture
-      mBrickDataHandle = mShip.loadTexture(m_context, R.drawable.stone_wall_public_domain);
+      // Load the textures
+      mBrickDataHandle = Object3D.loadTexture(m_context, R.drawable.stone_wall_public_domain);
       GLES32.glGenerateMipmap(GLES32.GL_TEXTURE_2D);
 
-      mGrassDataHandle = mShip.loadTexture(m_context, R.drawable.noisy_grass_public_domain);
+      mGrassDataHandle = Object3D.loadTexture(m_context, R.drawable.noisy_grass_public_domain);
       GLES32.glGenerateMipmap(GLES32.GL_TEXTURE_2D);
 
+      //  Set touch buttons and controls
       if (mQueuedMinFilter != 0)
       {
         setMinFilter(mQueuedMinFilter);
@@ -89,8 +92,9 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         setMagFilter(mQueuedMagFilter);
       }
 
-      solarSystem = new SolarSystem(m_context);
-      mShip = new Object3D(m_context, "Cube_3", com.hgm.androidengine.R.raw.iron_texture);
+      //  Load Objects
+      SolarSystem solarSystem = new SolarSystem(m_context);
+      mShip = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
     }
 
     @Override
@@ -101,12 +105,21 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       setProjectionMatrix(width, height);
     }
 
+  //************************************************************************************************
+  //
+  //  Name        : onDrawFrame
+  //
+  //  Description : Method called each frame we display we want as less work as possible here and only to
+  //                update the world state from frame to frame
+  //
+  //************************************************************************************************
     @Override
     public void onDrawFrame(GL10 gl)
     {
       // NOTE Clearing
       GLES32.glClearColor(0, 1f, 0, 1 );
 
+      //  Check blending state from touch control
       if(mBlending)
       {
         GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT);
@@ -136,37 +149,31 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       GLES32.glUniform1i(mTextureUniformHandle, 0);
 
       //  Translate the objects on to the screen
+      //  Handle object rotation and lightning
       getAngleInDegrades();
       setLightModelMatrix();
 
       //  TODO(ME):Refactor the following code so that we only need to call one draw method to display an object
       //  Set the first cube in world position
-      setModelMatrix( 0.0f, 0.0f, -7.0f );
+      /*setModelMatrix( 0.0f, 0.0f, -7.0f );
       setModelViewMatrix();
       setModelViewProductMatrix();
+      */
+
       //  Draw objects
+
       GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
       GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
       mShip.mRotation = mAngleInDegrades;
       mShip.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
-
       /*
-      //  Set the second cube in world position
-      setModelMatrix( 4.0f, 0.0f, -7.0f );
+      //  Set the second object in world position
+      setModelMatrix( 5.0f, 0.0f, -15.0f );
       setModelViewMatrix();
       setModelViewProductMatrix();
       GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
       GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
-      mShip.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
-
-      //  Set the third cube in world position
-      setModelMatrix( 0.0f, 4.0f, -7.0f );
-      setModelViewMatrix();
-      setModelViewProductMatrix();
-      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
-      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
-      mShip.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
-      */
+      mSystem.draw();*/
 
       //  Pass in the light position
       GLES32.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0],  mLightPosInEyeSpace[1],  mLightPosInEyeSpace[2]);
@@ -188,14 +195,14 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         //  From where we are locking at the scene
         final float eyeX = 0.0f;
         final float eyeY = 0.0f;
-        final float eyeZ = 2.0f;
+        final float eyeZ = 3.0f;
 
         //  Where we are locking at
         final float lookX = 0.0f;
         final float lookY = 0.0f;
         final float lookZ = -10.0f;
 
-        //  In which direction
+        //  In witch direction
         final float upX = 0.0f;
         final float upY = 1.0f;
         final float upZ = 0.0f;
@@ -220,13 +227,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         // Create the perspective matrix
       final float mRatio = (float) width / height;
       final float left = -mRatio;
-      final float right = mRatio;
       final float top = 1.0f;
       final float bottom = -1.0f;
       final float near = 0.8f;
       final float far = 20.0f;
 
-      Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+      Matrix.frustumM(mProjectionMatrix, 0, left, mRatio, bottom, top, near, far);
     }
 
     private void setModelViewProductMatrix()

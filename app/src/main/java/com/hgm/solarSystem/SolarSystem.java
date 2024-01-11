@@ -21,15 +21,19 @@ public class SolarSystem
   public static String STAR_SUN_NAME = "Sun";
   public static int PLANET_MERCURY = 1;
   public static String PLANET_MERCURY_NAME = "Mercury";
-  public static int PLANET_VENUS = 1;
+  public static int PLANET_VENUS = 2;
   public static String PLANET_VENUS_NAME = "Venus";
-  public static int PLANET_EARTH = 1;
+  public static int PLANET_EARTH = 3;
   public static String PLANET_EARTH_NAME = "Earth";
 
+  public static String PLANET_CUBE_DEBUG = "Cube_Normal";
+
   public Star sun;
+
   public Planet mercury;
   public Planet venus;
   public Planet earth;
+  // TODO(Madalin) : Expand the Solar System
   public Planet mars;
   public Planet jupiter;
   public Planet uranus;
@@ -40,20 +44,18 @@ public class SolarSystem
   public SolarSystem(Context context)
   {
     this.context = context;
-    sun = new Star(context, STAR_SUN, "Sun");
-    //  TODO(madalin) : Create the rest of the world
-    //mercury = new Planet(context, PLANET_MERCURY, "Mercury");
-    //venus = new Planet(context, PLANET_MERCURY, "Venus");
-    //earth = new Planet(context, PLANET_MERCURY, "Earth");
+    sun = new Star(context, STAR_SUN, STAR_SUN_NAME);
+    mercury = new Planet(context, PLANET_MERCURY, PLANET_CUBE_DEBUG);
+    venus = new Planet(context, PLANET_VENUS, PLANET_CUBE_DEBUG);
+    earth = new Planet(context, PLANET_EARTH, PLANET_CUBE_DEBUG);
   }
 
-  public void printObjects()
+  public void draw()
   {
-    sun.getPosition();
-    //  TODO(madalin) : Create the rest of the world
-    //mercury.getPosition();
-    //venus.getPosition();
-    //earth.getPosition();
+    sun.draw();
+    mercury.getPosition();
+    venus.getPosition();
+    earth.getPosition();
   }
 
 }
