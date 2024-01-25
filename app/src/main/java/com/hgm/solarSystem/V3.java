@@ -2,9 +2,9 @@ package com.hgm.solarSystem;
 
 public class V3
 {
-  private final double X;
-  private final double Y;
-  private final double Z;
+  private double X = 0;
+  private double Y = 0;
+  private double Z = 0;
 
   public V3( double X, double Y, double Z)
   {
@@ -18,6 +18,13 @@ public class V3
     return new V3(X + addend.X, Y + addend.Y, Z + addend.Z );
   }
 
+  public void set(double X, double Y, double Z)
+  {
+    this.X = X;
+    this.Y = Y;
+    this.Z = Z;
+  }
+
   public String print()
   {
     String positionString;
@@ -25,5 +32,18 @@ public class V3
     return positionString;
   }
 
+  public double GetX()
+  {
+    return this.X;
+  }
 
+  public double GetY()
+  {
+    return this.Y;
+  }
+
+  public double getZ()
+  {
+    return this.Z;
+  }
 }

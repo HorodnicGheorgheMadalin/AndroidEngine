@@ -45,17 +45,19 @@ public class SolarSystem
   {
     this.context = context;
     sun = new Star(context, STAR_SUN, STAR_SUN_NAME);
-    mercury = new Planet(context, PLANET_MERCURY, PLANET_CUBE_DEBUG);
-    venus = new Planet(context, PLANET_VENUS, PLANET_CUBE_DEBUG);
-    earth = new Planet(context, PLANET_EARTH, PLANET_CUBE_DEBUG);
+    //  TODO Init the rest of the sytem
+    //mercury = new Planet(context, PLANET_MERCURY, PLANET_CUBE_DEBUG);
+    //venus = new Planet(context, PLANET_VENUS, PLANET_CUBE_DEBUG);
+    //earth = new Planet(context, PLANET_EARTH, PLANET_CUBE_DEBUG);
   }
 
   public void draw()
   {
     sun.draw();
-    mercury.getPosition();
-    venus.getPosition();
-    earth.getPosition();
+    //  TODO Grow the rest of te system
+    //mercury.getPosition();
+    //venus.getPosition();
+    //earth.getPosition();
   }
 
 }

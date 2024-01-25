@@ -15,7 +15,13 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
 {
     private final Context   m_context;
 
-    private SolarSystem     mSystem = null;
+    //  TODO Change object to system
+    //private SolarSystem     mSystem = null;
+
+    private final int SOLAR_OBJECT_INDEX = 0;
+    private final int SHIP_OBJECT_INDEX = 1;
+
+    private Object3D        mSystem = null;
     private Object3D        mShip = null;
     private ShaderProgram   mShader;
     private float           mAngleInDegrades;
@@ -27,7 +33,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     //  Used to switch between different blending modes
     private boolean mBlending = true;
 
-    private final static int MATRIX_SIZE = 16;
+    //  TODO - The maximum number of objects our engine can handle
+    private final static int MATRIX_SIZE = 16*2;
 
     //  Used to transform the world space into ou eys
     private final float[] mViewMatrix                 = new float[MATRIX_SIZE];
@@ -93,7 +100,9 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       }
 
       //  Load Objects
-      SolarSystem solarSystem = new SolarSystem(m_context);
+      //  TODO Replace base type
+      //mSystem = new SolarSystem(m_context);
+      mSystem = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
       mShip = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
     }
 
@@ -144,6 +153,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       //  Set the active texture to 0
       GLES32.glActiveTexture(GLES32.GL_TEXTURE0);
       //  Bind the texture to this unit
+      GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mSystem.mTextureDataHandle);
       GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mShip.mTextureDataHandle);
       //  Tell the uniform sampler to use this texture
       GLES32.glUniform1i(mTextureUniformHandle, 0);
@@ -151,7 +161,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       //  Translate the objects on to the screen
       //  Handle object rotation and lightning
       getAngleInDegrades();
-      setLightModelMatrix();
+      //  TODO this should be done for all lights not all objects
+      setLightModelMatrix(SOLAR_OBJECT_INDEX);
 
       //  TODO(ME):Refactor the following code so that we only need to call one draw method to display an object
       //  Set the first cube in world position
@@ -159,26 +170,54 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       setModelViewMatrix();
       setModelViewProductMatrix();
       */
+      //  Draw the system
+      //  TODO - Move the input parameters inside the draw function
+      //  TODO - Load 2 independent objects and display them
+      mSystem.mRotation = mAngleInDegrades;
+      //mSystem.setPosition(0, 0, 0);
+      //  Sets Object position and rotation
+      setModelMatrix( 0.0f, 0.0f, 0.0f, SOLAR_OBJECT_INDEX );
+      setModelViewMatrix(SOLAR_OBJECT_INDEX);
+      setModelViewProductMatrix(SOLAR_OBJECT_INDEX);
+      mSystem.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SOLAR_OBJECT_INDEX);
+      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SOLAR_OBJECT_INDEX);
 
-      //  Draw objects
+      setModelMatrix( 5.0f, 5.0f, 0.0f, SOLAR_OBJECT_INDEX );
+      setModelViewMatrix(SOLAR_OBJECT_INDEX);
+      setModelViewProductMatrix(SOLAR_OBJECT_INDEX);
+      mSystem.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
 
-      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
-      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
+      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SOLAR_OBJECT_INDEX);
+      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SOLAR_OBJECT_INDEX);
+
+      //  TODO Display The Second object
+/*
       mShip.mRotation = mAngleInDegrades;
+      //mShip.setPosition(2, 2, 0);
+      //  TODO use object position
+      setModelMatrix( 10.0f, 10.0f, 0.0f, SHIP_OBJECT_INDEX );
+      setModelViewMatrix(SHIP_OBJECT_INDEX);
+      setModelViewProductMatrix(SHIP_OBJECT_INDEX);
       mShip.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SHIP_OBJECT_INDEX);
+      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SHIP_OBJECT_INDEX);
+
+      //  Draw the ship
       /*
       //  Set the second object in world position
       setModelMatrix( 5.0f, 0.0f, -15.0f );
       setModelViewMatrix();
       setModelViewProductMatrix();
       GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
-      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
-      mSystem.draw();*/
+      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);*/
+
 
       //  Pass in the light position
       GLES32.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0],  mLightPosInEyeSpace[1],  mLightPosInEyeSpace[2]);
 
       //  Draw light
+      //  TODO ( HANDLE Lightning)
       renderLight();
     }
 
@@ -195,7 +234,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         //  From where we are locking at the scene
         final float eyeX = 0.0f;
         final float eyeY = 0.0f;
-        final float eyeZ = 3.0f;
+        final float eyeZ = -20.0f;
 
         //  Where we are locking at
         final float lookX = 0.0f;
@@ -235,33 +274,35 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       Matrix.frustumM(mProjectionMatrix, 0, left, mRatio, bottom, top, near, far);
     }
 
-    private void setModelViewProductMatrix()
+    private void setModelViewProductMatrix(int objectIndex)
     {
-        Matrix.multiplyMM(mModelViewProjectionMatrix, 0, mProjectionMatrix, 0, mModelViewMatrix, 0 );
+        Matrix.multiplyMM(mModelViewProjectionMatrix, objectIndex, mProjectionMatrix, 0, mModelViewMatrix, 0 );
     }
 
-    private void setModelMatrix( float x, float y, float z)
+    private void setModelMatrix( float x, float y, float z, int objectIndex)
     {
-        Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, x, y, z);
-        Matrix.rotateM(mModelMatrix, 0, mAngleInDegrades + mDeltaX, 0.0f, 1.0f, 0.0f );
+        Matrix.setIdentityM(mModelMatrix, objectIndex);
+        Matrix.translateM(mModelMatrix, objectIndex, x, y, z);
+
+        //  TODO Handle only x axis rotation
+        Matrix.rotateM(mModelMatrix, objectIndex, mAngleInDegrades + mDeltaX, 0.0f, 1.0f, 0.0f );
     }
 
-    private void setModelViewMatrix()
+    private void setModelViewMatrix(int objectIndex)
     {
-      Matrix.multiplyMM(mModelViewMatrix, 0, mViewMatrix, 0, mModelMatrix, 0 );
+      Matrix.multiplyMM(mModelViewMatrix, objectIndex, mViewMatrix, 0, mModelMatrix, 0 );
     }
 
 
-    private void setLightModelMatrix()
+    private void setLightModelMatrix(int objectIndex)
     {
-        Matrix.setIdentityM(mLightModelMatrix, 0);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f,0.0f, -5.0f);
-        Matrix.rotateM(mLightModelMatrix, 0, mAngleInDegrades + mDeltaY, 0.0f, 1.0f, 0.0f);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f,0.0f, 2.0f);
+        Matrix.setIdentityM(mLightModelMatrix, objectIndex);
+        Matrix.translateM(mLightModelMatrix, objectIndex, 0.0f,0.0f, -5.0f);
+        Matrix.rotateM(mLightModelMatrix, objectIndex, mAngleInDegrades + mDeltaY, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(mLightModelMatrix, objectIndex, 0.0f,0.0f, 2.0f);
 
-        Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
-        Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
+        Matrix.multiplyMV(mLightPosInWorldSpace, objectIndex, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(mLightPosInEyeSpace, objectIndex, mViewMatrix, 0, mLightPosInWorldSpace, 0);
     }
 
 

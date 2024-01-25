@@ -8,6 +8,8 @@ import android.opengl.GLUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.hgm.solarSystem.V3;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -35,6 +37,8 @@ public class Object3D
     public  int     mTextureDataHandle;
 
     float mRotation;
+
+    V3 mPosition = null;
 
     private static final int SIZE_OF_FLOAT      = 4;
     private static final int SIZE_OF_SHORT      = 2;
@@ -74,8 +78,10 @@ public class Object3D
         String strFileName = strName + FILE_EXTENSION_3D;
         initObject(context, strFileName);
         mRotation = 0.0f;
+        mPosition = new V3(0, 0, 0);
     }
 
+    //  Method used to read a .obj file and init the various parameters of the object.
     private void initObject(Context context, String strFileName)
     {
         List<String> verticesList;
@@ -284,5 +290,10 @@ public class Object3D
         }
 
         return textureHandle[0];
+    }
+
+    public void setPosition( double X, double Y, double Z)
+    {
+        mPosition.set(X, Y, Z);
     }
 }
