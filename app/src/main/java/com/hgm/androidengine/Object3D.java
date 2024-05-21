@@ -39,6 +39,8 @@ public class Object3D
     float mRotation;
 
     V3 mPosition = null;
+    V3 mRotationAxis = null;
+    public int mObjectCount;
 
     private static final int SIZE_OF_FLOAT      = 4;
     private static final int SIZE_OF_SHORT      = 2;
@@ -79,6 +81,9 @@ public class Object3D
         initObject(context, strFileName);
         mRotation = 0.0f;
         mPosition = new V3(0, 0, 0);
+        //  Rotate by default all objects on the X Axes
+        mRotationAxis = new V3(0, 1, 0);
+        mObjectCount = 0;
     }
 
     //  Method used to read a .obj file and init the various parameters of the object.

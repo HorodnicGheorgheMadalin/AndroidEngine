@@ -6,7 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
-import com.hgm.solarSystem.SolarSystem;
+import com.hgm.solarSystem.V3;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -21,8 +21,10 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private final int SOLAR_OBJECT_INDEX = 0;
     private final int SHIP_OBJECT_INDEX = 1;
 
-    private Object3D        mSystem = null;
-    private Object3D        mShip = null;
+    private Object3D Earth = null;
+    private Object3D Moon = null;
+    private Object3D Ship = null;
+    private Object3D[]      m_vObjects = null;
     private ShaderProgram   mShader;
     private float           mAngleInDegrades;
 
@@ -33,7 +35,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     //  Used to switch between different blending modes
     private boolean mBlending = true;
 
-    //  TODO - The maximum number of objects our engine can handle
+    //  TODO - The maximum number of objects our engine can handle is currently 3
     private final static int MATRIX_SIZE = 16*2;
 
     //  Used to transform the world space into ou eys
@@ -102,8 +104,17 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       //  Load Objects
       //  TODO Replace base type
       //mSystem = new SolarSystem(m_context);
-      mSystem = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
-      mShip = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
+      Earth = new Object3D(m_context, "Sun", R.drawable.bumpy_bricks_public_domain);
+      Earth.mRotation = mAngleInDegrades;
+      Moon = new Object3D(m_context, "Sun", R.drawable.stone_wall_public_domain);
+      Moon.mRotation = mAngleInDegrades/2;
+      Moon.mPosition = new V3(3, 3, 0);
+      Ship = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
+      Ship.mPosition = new V3(6, 6, 0);
+      m_vObjects = new Object3D[3];
+      m_vObjects[0] = Earth;
+      m_vObjects[1] = Moon;
+      m_vObjects[2] = Ship;
     }
 
     @Override
@@ -121,104 +132,181 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
   //  Description : Method called each frame we display we want as less work as possible here and only to
   //                update the world state from frame to frame
   //
-  //************************************************************************************************
+  //************************************************************************************************/*
     @Override
     public void onDrawFrame(GL10 gl)
+//    {
+//      // NOTE Clearing
+//      GLES32.glClearColor(0, 1f, 0, 1 );
+//
+//      //  Check blending state from touch control
+//      if(mBlending)
+//      {
+//        GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT);
+//      }
+//      else
+//      {
+//        GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT | GLES32.GL_DEPTH_BUFFER_BIT);
+//      }
+//
+//      //  NOTE Use Shader Program
+//      mShader.useShader();
+//      //  NOTE Set up input
+//      int mModelViewProductMatrixHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_MVPMatrix");
+//      int mModelViewMatrixHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_MVMatrix");
+//      int mLightPosHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_LightPos");
+//      int mPositionHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Position");
+//      int mColorHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Color");
+//      int mNormalHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Normal");
+//      int mTextureUniformHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_Texture");
+//      int mTextureCoordinateHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_TexCoordinate");
+//
+//      //  Set the active texture to 0
+//      GLES32.glActiveTexture(GLES32.GL_TEXTURE0);
+//      //  Bind the texture to this unit
+//      GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mSystem.mTextureDataHandle);
+//      GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mShip.mTextureDataHandle);
+//      //  Tell the uniform sampler to use this texture
+//      GLES32.glUniform1i(mTextureUniformHandle, 0);
+//
+//      //  Translate the objects on to the screen
+//      //  Handle object rotation and lightning
+//      getAngleInDegrades();
+//      //  TODO this should be done for all lights not all objects
+//      setLightModelMatrix(SOLAR_OBJECT_INDEX);
+//
+//      //  TODO(ME):Refactor the following code so that we only need to call one draw method to display an object
+//      //  Set the first cube in world position
+//      /*setModelMatrix( 0.0f, 0.0f, -7.0f );
+//      setModelViewMatrix();
+//      setModelViewProductMatrix();
+//      */
+//      //  Draw the system
+//      //  TODO - Move the input parameters inside the draw function
+//      //  TODO - Load 2 independent objects and display them
+//      m_vObjects[0].mRotation = mAngleInDegrades;
+//      m_vObjects[1].mRotation = mAngleInDegrades/2;
+//
+//      for(Object3D object : m_vObjects)
+//      {
+//          setModelMatrix( 0.0f, 0.0f, 0.0f, SOLAR_OBJECT_INDEX );
+//          setModelViewMatrix(SOLAR_OBJECT_INDEX);
+//          setModelViewProductMatrix(SOLAR_OBJECT_INDEX);
+//          mSystem.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+//          GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SOLAR_OBJECT_INDEX);
+//          GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SOLAR_OBJECT_INDEX);
+//      }
+//      //mSystem.setPosition(0, 0, 0);
+//      //  Sets Object position and rotation
+//      setModelMatrix( 0.0f, 0.0f, 0.0f, SOLAR_OBJECT_INDEX );
+//      setModelViewMatrix(SOLAR_OBJECT_INDEX);
+//      setModelViewProductMatrix(SOLAR_OBJECT_INDEX);
+//      mSystem.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+//      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SOLAR_OBJECT_INDEX);
+//      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SOLAR_OBJECT_INDEX);
+//
+//      setModelMatrix( 5.0f, 5.0f, 0.0f, SOLAR_OBJECT_INDEX );
+//      setModelViewMatrix(SOLAR_OBJECT_INDEX);
+//      setModelViewProductMatrix(SOLAR_OBJECT_INDEX);
+//      mSystem.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+//
+//      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SOLAR_OBJECT_INDEX);
+//      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SOLAR_OBJECT_INDEX);
+//
+//      //  TODO Display The Second object
+///*
+//      mShip.mRotation = mAngleInDegrades;
+//      //mShip.setPosition(2, 2, 0);
+//      //  TODO use object position
+//      setModelMatrix( 10.0f, 10.0f, 0.0f, SHIP_OBJECT_INDEX );
+//      setModelViewMatrix(SHIP_OBJECT_INDEX);
+//      setModelViewProductMatrix(SHIP_OBJECT_INDEX);
+//      mShip.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+//      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SHIP_OBJECT_INDEX);
+//      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SHIP_OBJECT_INDEX);
+//
+//      //  Draw the ship
+//      /*
+//      //  Set the second object in world position
+//      setModelMatrix( 5.0f, 0.0f, -15.0f );
+//      setModelViewMatrix();
+//      setModelViewProductMatrix();
+//      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
+//      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);*/
+//
+//
+//      //  Pass in the light position
+//      GLES32.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0],  mLightPosInEyeSpace[1],  mLightPosInEyeSpace[2]);
+//
+//      //  Draw light
+//      //  TODO ( HANDLE Lightning)
+//      renderLight();
+//    }
     {
-      // NOTE Clearing
-      GLES32.glClearColor(0, 1f, 0, 1 );
+        // NOTE Clearing
+        GLES32.glClearColor(0, 1f, 0, 1 );
 
-      //  Check blending state from touch control
-      if(mBlending)
-      {
-        GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT);
-      }
-      else
-      {
-        GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT | GLES32.GL_DEPTH_BUFFER_BIT);
-      }
+        //  Check blending state from touch control
+        if(mBlending)
+        {
+            GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT);
+        }
+        else
+        {
+            GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT | GLES32.GL_DEPTH_BUFFER_BIT);
+        }
 
-      //  NOTE Use Shader Program
-      mShader.useShader();
-      //  NOTE Set up input
-      int mModelViewProductMatrixHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_MVPMatrix");
-      int mModelViewMatrixHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_MVMatrix");
-      int mLightPosHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_LightPos");
-      int mPositionHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Position");
-      int mColorHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Color");
-      int mNormalHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Normal");
-      int mTextureUniformHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_Texture");
-      int mTextureCoordinateHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_TexCoordinate");
+        //  NOTE Use Shader Program
+        mShader.useShader();
+        //  NOTE Set up input
+        int mModelViewProductMatrixHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_MVPMatrix");
+        int mModelViewMatrixHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_MVMatrix");
+        int mLightPosHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_LightPos");
+        int mPositionHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Position");
+        int mColorHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Color");
+        int mNormalHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_Normal");
+        int mTextureUniformHandle = mShader.getInputUniformParameter(mShader.m_programHandle, "u_Texture");
+        int mTextureCoordinateHandle = mShader.getInputAttributeParameter(mShader.m_programHandle, "a_TexCoordinate");
 
-      //  Set the active texture to 0
-      GLES32.glActiveTexture(GLES32.GL_TEXTURE0);
-      //  Bind the texture to this unit
-      GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mSystem.mTextureDataHandle);
-      GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mShip.mTextureDataHandle);
-      //  Tell the uniform sampler to use this texture
-      GLES32.glUniform1i(mTextureUniformHandle, 0);
+        //  Set the active texture to 0
+        GLES32.glActiveTexture(GLES32.GL_TEXTURE0);
+        //  Bind the texture to this unit
+        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, Earth.mTextureDataHandle);
+        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, Moon.mTextureDataHandle);
+        //  Tell the uniform sampler to use this texture
+        GLES32.glUniform1i(mTextureUniformHandle, 0);
 
-      //  Translate the objects on to the screen
-      //  Handle object rotation and lightning
-      getAngleInDegrades();
-      //  TODO this should be done for all lights not all objects
-      setLightModelMatrix(SOLAR_OBJECT_INDEX);
+        //  Translate the objects on to the screen
+        //  Handle object rotation and lightning
+        getAngleInDegrades();
+        //  TODO this should be done for all lights not all objects
+        setLightModelMatrix(SOLAR_OBJECT_INDEX);
 
-      //  TODO(ME):Refactor the following code so that we only need to call one draw method to display an object
-      //  Set the first cube in world position
-      /*setModelMatrix( 0.0f, 0.0f, -7.0f );
-      setModelViewMatrix();
-      setModelViewProductMatrix();
-      */
-      //  Draw the system
-      //  TODO - Move the input parameters inside the draw function
-      //  TODO - Load 2 independent objects and display them
-      mSystem.mRotation = mAngleInDegrades;
-      //mSystem.setPosition(0, 0, 0);
-      //  Sets Object position and rotation
-      setModelMatrix( 0.0f, 0.0f, 0.0f, SOLAR_OBJECT_INDEX );
-      setModelViewMatrix(SOLAR_OBJECT_INDEX);
-      setModelViewProductMatrix(SOLAR_OBJECT_INDEX);
-      mSystem.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
-      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SOLAR_OBJECT_INDEX);
-      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SOLAR_OBJECT_INDEX);
+        //  Draw the system
+        //  TODO - Move the input parameters inside the draw function
+        //  TODO - Load 3 independent objects and display them
+        //  TODO - Make rotation part of object properties
+        //  TODO - Understand OFFSET
 
-      setModelMatrix( 5.0f, 5.0f, 0.0f, SOLAR_OBJECT_INDEX );
-      setModelViewMatrix(SOLAR_OBJECT_INDEX);
-      setModelViewProductMatrix(SOLAR_OBJECT_INDEX);
-      mSystem.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+        int nObjectIndex = 0;
+        for(Object3D object : m_vObjects) {
+            moveObject(object.mPosition, 0);
+            rotateObject(mAngleInDegrades, object.mRotationAxis, 0);
+            //setModelMatrix(object.mPosition, 0);
+            setModelViewMatrix(0);
+            setModelViewProductMatrix(0);
+            Earth.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+            GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
+            GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
+            nObjectIndex++;
+        }
 
-      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SOLAR_OBJECT_INDEX);
-      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SOLAR_OBJECT_INDEX);
+        //  Pass in the light position
+        GLES32.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0],  mLightPosInEyeSpace[1],  mLightPosInEyeSpace[2]);
 
-      //  TODO Display The Second object
-/*
-      mShip.mRotation = mAngleInDegrades;
-      //mShip.setPosition(2, 2, 0);
-      //  TODO use object position
-      setModelMatrix( 10.0f, 10.0f, 0.0f, SHIP_OBJECT_INDEX );
-      setModelViewMatrix(SHIP_OBJECT_INDEX);
-      setModelViewProductMatrix(SHIP_OBJECT_INDEX);
-      mShip.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
-      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, SHIP_OBJECT_INDEX);
-      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, SHIP_OBJECT_INDEX);
-
-      //  Draw the ship
-      /*
-      //  Set the second object in world position
-      setModelMatrix( 5.0f, 0.0f, -15.0f );
-      setModelViewMatrix();
-      setModelViewProductMatrix();
-      GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
-      GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);*/
-
-
-      //  Pass in the light position
-      GLES32.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0],  mLightPosInEyeSpace[1],  mLightPosInEyeSpace[2]);
-
-      //  Draw light
-      //  TODO ( HANDLE Lightning)
-      renderLight();
+        //  Draw light
+        //  TODO ( HANDLE Lightning)
+        //renderLight();
     }
 
   //************************************************************************************************
@@ -255,7 +343,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
   //
   //  Description : Method used to ser projection matrix this is usually the size of the screen we
   //                  want to map to our screen device. It is usually called when the app is resumed
-  //                  or the device resolution si changed.
+  //                  or the device resolution is changed.
   //
   //  Parameters  : int width - the width of our device screen
   //                int height - the height of our device
@@ -288,11 +376,29 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         Matrix.rotateM(mModelMatrix, objectIndex, mAngleInDegrades + mDeltaX, 0.0f, 1.0f, 0.0f );
     }
 
+    private void setModelMatrix(V3 position, int nIndex)
+    {
+        Matrix.setIdentityM(mModelMatrix, nIndex);
+        Matrix.translateM(mModelMatrix, nIndex, (float)position.GetX(), (float)position.GetY(), (float)position.GetZ());
+
+        //  TODO Handle only x axis rotation
+        Matrix.rotateM(mModelMatrix, nIndex, mAngleInDegrades + mDeltaX, 0.0f, 1.0f, 0.0f );
+    }
+
+    private void moveObject(V3 position, int nIndex){
+        Matrix.setIdentityM(mModelMatrix, nIndex);
+        Matrix.translateM(mModelMatrix, nIndex, (float)position.GetX(), (float)position.GetY(), (float)position.GetZ());
+    }
+
+    private void rotateObject(float angle, V3 rotationAxis, int nIndex){
+        //Matrix.setIdentityM(mModelMatrix, nIndex);
+        Matrix.rotateM(mModelMatrix, nIndex, angle + mDeltaY, (float)rotationAxis.GetX(), (float)rotationAxis.GetY(), (float)rotationAxis.GetZ());
+    }
+
     private void setModelViewMatrix(int objectIndex)
     {
       Matrix.multiplyMM(mModelViewMatrix, objectIndex, mViewMatrix, 0, mModelMatrix, 0 );
     }
-
 
     private void setLightModelMatrix(int objectIndex)
     {

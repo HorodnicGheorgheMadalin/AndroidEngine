@@ -42,7 +42,7 @@ public class V3
     return this.Y;
   }
 
-  public double getZ()
+  public double GetZ()
   {
     return this.Z;
   }
