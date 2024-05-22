@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES32;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class Object3D
 
     V3 mPosition = null;
     V3 mRotationAxis = null;
+    V3 mScale = null;
     public int mObjectCount;
 
     private static final int SIZE_OF_FLOAT      = 4;
@@ -83,6 +85,7 @@ public class Object3D
         mPosition = new V3(0, 0, 0);
         //  Rotate by default all objects on the X Axes
         mRotationAxis = new V3(0, 1, 0);
+        mScale = new V3(1, 1, 1);
         mObjectCount = 0;
     }
 
@@ -301,4 +304,5 @@ public class Object3D
     {
         mPosition.set(X, Y, Z);
     }
+
 }
