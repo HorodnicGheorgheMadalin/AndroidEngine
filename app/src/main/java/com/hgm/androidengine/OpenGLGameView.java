@@ -91,11 +91,9 @@ public class OpenGLGameView extends GLSurfaceView
     }
 
     public void setMagFilter(final int filter){
-        mRenderer.setMagFilter(filter);
     }
 
     public void setMinFilter(final int filter){
-        mRenderer.setMinFilter(filter);
     }
 
 }

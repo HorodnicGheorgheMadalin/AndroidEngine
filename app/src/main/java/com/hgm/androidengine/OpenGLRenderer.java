@@ -21,6 +21,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private final int SOLAR_OBJECT_INDEX = 0;
     private final int SHIP_OBJECT_INDEX = 1;
 
+    private Object3D Sun = null;
     private Object3D Earth = null;
     private Object3D Moon = null;
     private Object3D Ship = null;
@@ -29,8 +30,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private float           mAngleInDegrades;
 
     /** These are handles to our texture data. */
-    private int mBrickDataHandle, mQueuedMagFilter;
-    private int mGrassDataHandle, mQueuedMinFilter;
+    //private int mBrickDataHandle, mGrassDataHandle, mDirtDataHandle;
+    private int mQueuedMagFilter, mQueuedMinFilter;
 
     //  Used to switch between different blending modes
     private boolean mBlending = true;
@@ -68,14 +69,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     {
       GLES32.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
-      //  Disable culling of faces
-      GLES32.glDisable(GLES32.GL_CULL_FACE);
-      //  Disable depth testing
-      GLES32.glDisable(GLES32.GL_DEPTH_TEST);
-      //  Enable blending
-      GLES32.glEnable(GLES32.GL_BLEND);
-      GLES32.glBlendFunc(GLES32.GL_ONE, GLES32.GL_ONE);
-      //GLES32.glBlendEquation(GLES32.GL_FUNC_ADD);
+        //  Cull back faces
+        GLES32.glEnable(GLES32.GL_CULL_FACE);
+        //  Enable depth testing
+        GLES32.glEnable(GLES32.GL_DEPTH_TEST);
+        //  Disable blending
+        GLES32.glDisable(GLES32.GL_BLEND);
 
       //  Set Camera
       setViewMatrix();
@@ -83,38 +82,26 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       //  Create Shader Program
       mShader = new ShaderProgram(m_context);
 
-      // Load the textures
-      mBrickDataHandle = Object3D.loadTexture(m_context, R.drawable.stone_wall_public_domain);
-      GLES32.glGenerateMipmap(GLES32.GL_TEXTURE_2D);
-
-      mGrassDataHandle = Object3D.loadTexture(m_context, R.drawable.noisy_grass_public_domain);
-      GLES32.glGenerateMipmap(GLES32.GL_TEXTURE_2D);
-
-      //  Set touch buttons and controls
-      if (mQueuedMinFilter != 0)
-      {
-        setMinFilter(mQueuedMinFilter);
-      }
-
-      if (mQueuedMagFilter != 0)
-      {
-        setMagFilter(mQueuedMagFilter);
-      }
-
       //  Load Objects
-      //  TODO Replace base type
+      //  TODO( mHorodni ) Replace base type
+        //  TODO(mHorodni) Fix texture
       //mSystem = new SolarSystem(m_context);
+        Sun = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
+        Sun.mRotation = mAngleInDegrades;
+        Sun.mPosition = new V3(0, 0, 0);
       Earth = new Object3D(m_context, "Sun", R.drawable.bumpy_bricks_public_domain);
       Earth.mRotation = mAngleInDegrades;
+      Earth.mPosition = new V3(50, 0, 10);
       Moon = new Object3D(m_context, "Sun", R.drawable.stone_wall_public_domain);
       Moon.mRotation = mAngleInDegrades/2;
-      Moon.mPosition = new V3(3, 3, 0);
+      Moon.mPosition = new V3(60, 0, 15);
       Ship = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
-      Ship.mPosition = new V3(6, 6, 0);
-      m_vObjects = new Object3D[3];
-      m_vObjects[0] = Earth;
-      m_vObjects[1] = Moon;
-      m_vObjects[2] = Ship;
+      Ship.mPosition = new V3(65, 0, 18);
+      m_vObjects = new Object3D[4];
+      m_vObjects[0] = Sun;
+      m_vObjects[1] = Earth;
+      m_vObjects[2] = Moon;
+      m_vObjects[3] = Ship;
     }
 
     @Override
@@ -123,6 +110,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       GLES32.glClearColor(0, 1f, 0, 1 );
       GLES32.glViewport(0, 0, width, height);
       setProjectionMatrix(width, height);
+        //  Cull back faces
+        GLES32.glEnable(GLES32.GL_CULL_FACE);
+        //  Enable depth testing
+        GLES32.glEnable(GLES32.GL_DEPTH_TEST);
+        //  Disable blending
+        GLES32.glDisable(GLES32.GL_BLEND);
     }
 
   //************************************************************************************************
@@ -271,8 +264,11 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         //  Set the active texture to 0
         GLES32.glActiveTexture(GLES32.GL_TEXTURE0);
         //  Bind the texture to this unit
+        //  TODO(mHorodni) : Bind texture in object3d
+        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, Sun.mTextureDataHandle);
         GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, Earth.mTextureDataHandle);
         GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, Moon.mTextureDataHandle);
+        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, Ship.mTextureDataHandle);
         //  Tell the uniform sampler to use this texture
         GLES32.glUniform1i(mTextureUniformHandle, 0);
 
@@ -288,11 +284,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         //  TODO - Make rotation part of object properties
         //  TODO - Understand OFFSET
 
+
         int nObjectIndex = 0;
         for(Object3D object : m_vObjects) {
             moveObject(object.mPosition, 0);
             rotateObject(mAngleInDegrades, object.mRotationAxis, 0);
-            //setModelMatrix(object.mPosition, 0);
+            drawTexture(object.mTextureDataHandle);
             setModelViewMatrix(0);
             setModelViewProductMatrix(0);
             Earth.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
@@ -306,7 +303,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
 
         //  Draw light
         //  TODO ( HANDLE Lightning)
-        //renderLight();
+        renderLight();
     }
 
   //************************************************************************************************
@@ -320,14 +317,14 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private void setViewMatrix()
     {
         //  From where we are locking at the scene
-        final float eyeX = 0.0f;
-        final float eyeY = 0.0f;
-        final float eyeZ = -20.0f;
+        final float eyeX = 80.0f;
+        final float eyeY = 10.0f;
+        final float eyeZ = 25.0f;
 
         //  Where we are locking at
         final float lookX = 0.0f;
         final float lookY = 0.0f;
-        final float lookZ = -10.0f;
+        final float lookZ = 0.0f;
 
         //  In witch direction
         final float upX = 0.0f;
@@ -341,7 +338,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
   //
   //  Name        : setProjectionMatrix
   //
-  //  Description : Method used to ser projection matrix this is usually the size of the screen we
+  //  Description : Method used to set projection matrix this is usually the size of the screen we
   //                  want to map to our screen device. It is usually called when the app is resumed
   //                  or the device resolution is changed.
   //
@@ -357,7 +354,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       final float top = 1.0f;
       final float bottom = -1.0f;
       final float near = 0.8f;
-      final float far = 20.0f;
+      final float far = 200.0f;
 
       Matrix.frustumM(mProjectionMatrix, 0, left, mRatio, bottom, top, near, far);
     }
@@ -395,6 +392,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         Matrix.rotateM(mModelMatrix, nIndex, angle + mDeltaY, (float)rotationAxis.GetX(), (float)rotationAxis.GetY(), (float)rotationAxis.GetZ());
     }
 
+    private void drawTexture(int mTextureHandle)
+    {
+        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mTextureHandle);
+        //GLES32.glTexParameteri(GLES32.GL_TEXTURE_2D, GLES32.GL_TEXTURE_MIN_FILTER, filter);
+    }
+
     private void setModelViewMatrix(int objectIndex)
     {
       Matrix.multiplyMM(mModelViewMatrix, objectIndex, mViewMatrix, 0, mModelMatrix, 0 );
@@ -403,9 +406,9 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private void setLightModelMatrix(int objectIndex)
     {
         Matrix.setIdentityM(mLightModelMatrix, objectIndex);
-        Matrix.translateM(mLightModelMatrix, objectIndex, 0.0f,0.0f, -5.0f);
+        //Matrix.translateM(mLightModelMatrix, objectIndex, 0.0f,3.0f, 5.0f);
         Matrix.rotateM(mLightModelMatrix, objectIndex, mAngleInDegrades + mDeltaY, 0.0f, 1.0f, 0.0f);
-        Matrix.translateM(mLightModelMatrix, objectIndex, 0.0f,0.0f, 2.0f);
+        //Matrix.translateM(mLightModelMatrix, objectIndex, 0.0f,0.0f, 2.0f);
 
         Matrix.multiplyMV(mLightPosInWorldSpace, objectIndex, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
         Matrix.multiplyMV(mLightPosInEyeSpace, objectIndex, mViewMatrix, 0, mLightPosInWorldSpace, 0);
@@ -462,36 +465,6 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         GLES32.glEnable(GLES32.GL_DEPTH_TEST);
         //  Disable blending
         GLES32.glDisable(GLES32.GL_BLEND);
-      }
-    }
-
-    public void setMinFilter(final int filter)
-    {
-      if (mBrickDataHandle != 0 && mGrassDataHandle != 0)
-      {
-        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mBrickDataHandle);
-        GLES32.glTexParameteri(GLES32.GL_TEXTURE_2D, GLES32.GL_TEXTURE_MIN_FILTER, filter);
-        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mGrassDataHandle);
-        GLES32.glTexParameteri(GLES32.GL_TEXTURE_2D, GLES32.GL_TEXTURE_MIN_FILTER, filter);
-      }
-      else
-      {
-        mQueuedMinFilter = filter;
-      }
-    }
-
-    public void setMagFilter(final int filter)
-    {
-      if (mBrickDataHandle != 0 && mGrassDataHandle != 0)
-      {
-        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mBrickDataHandle);
-        GLES32.glTexParameteri(GLES32.GL_TEXTURE_2D, GLES32.GL_TEXTURE_MAG_FILTER, filter);
-        GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, mGrassDataHandle);
-        GLES32.glTexParameteri(GLES32.GL_TEXTURE_2D, GLES32.GL_TEXTURE_MAG_FILTER, filter);
-      }
-      else
-      {
-        mQueuedMagFilter = filter;
       }
     }
 
