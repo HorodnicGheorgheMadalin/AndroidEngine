@@ -30,7 +30,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private boolean mBlending = true;
 
     //  TODO - The maximum number of objects our engine can handle is currently 3
-    private final static int MATRIX_SIZE = 16*2;
+    private final static int MATRIX_SIZE = 16;
 
     //  Used to transform the world space into ou eys
     private final float[] mViewMatrix                 = new float[MATRIX_SIZE];
@@ -93,7 +93,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       Moon.mScale = new V3(0.5,0.5,0.5);
       Ship = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
       Ship.mPosition = new V3(65, 0, 18);
-      Ship.mScale = new V3( 0.1, 0.1, 0.1);
+      Ship.mScale = new V3( 1, 0.1, 0.1);
       m_vObjects = new Object3D[4];
       m_vObjects[0] = Sun;
       m_vObjects[1] = Earth;
@@ -129,15 +129,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         // NOTE Clearing
         GLES32.glClearColor(0, 1f, 0, 1 );
 
-        //  Check blending state from touch control
-        if(mBlending)
-        {
-            GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT);
-        }
-        else
-        {
-            GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT | GLES32.GL_DEPTH_BUFFER_BIT);
-        }
+        GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT | GLES32.GL_DEPTH_BUFFER_BIT);
 
         //  NOTE Use Shader Program
         mShader.useShader();
@@ -204,12 +196,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private void setViewMatrix()
     {
         //  From where we are locking at the scene
-        final float eyeX = 75.0f;
+        final float eyeX = 80.0f;
         final float eyeY = 10.0f;
         final float eyeZ = 0.0f;
 
         //  Where we are locking at
-        final float lookX = 20.0f;
+        final float lookX = 0.0f;
         final float lookY = 0.0f;
         final float lookZ = 0.0f;
 
@@ -332,31 +324,6 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
 
       //  Draw the point.
       GLES32.glDrawArrays(GLES32.GL_POINTS, 0, 1);
-    }
-
-    public void switchMode()
-    {
-      mBlending = !mBlending;
-
-      if( mBlending)
-      {
-        //  Disable culling of faces
-        GLES32.glDisable(GLES32.GL_CULL_FACE);
-        //  Disable depth testing
-        GLES32.glDisable(GLES32.GL_DEPTH_TEST);
-        //  Enable blending
-        GLES32.glEnable(GLES32.GL_BLEND);
-        GLES32.glBlendFunc(GLES32.GL_ONE, GLES32.GL_ONE);
-      }
-      else
-      {
-        //  Cull back faces
-        GLES32.glEnable(GLES32.GL_CULL_FACE);
-        //  Enable depth testing
-        GLES32.glEnable(GLES32.GL_DEPTH_TEST);
-        //  Disable blending
-        GLES32.glDisable(GLES32.GL_BLEND);
-      }
     }
 
 }

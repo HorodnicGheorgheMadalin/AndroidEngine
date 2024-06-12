@@ -65,7 +65,7 @@ public class OpenGLGameView extends GLSurfaceView
                     queueEvent(new Runnable() {
                         @Override
                         public void run() {
-                            mRenderer.switchMode();
+                            //  TODO( Add Click Handler)
                         }
                     });
                 }
