@@ -38,7 +38,9 @@ public class OpenGLGameView extends GLSurfaceView
         setPreserveEGLContextOnPause(true);
         mRenderer = new OpenGLRenderer(context);
         setRenderer(mRenderer);
+        //  Only Draw the rendered scene when a change is present
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        //setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
     public boolean onTouchEvent(MotionEvent event)
@@ -94,10 +96,10 @@ public class OpenGLGameView extends GLSurfaceView
         super.setRenderer(renderer);
     }
 
-    public void setMagFilter(final int filter){
+    public void setMagFilter(){
     }
 
-    public void setMinFilter(final int filter){
+    public void setMinFilter(){
     }
 
 }

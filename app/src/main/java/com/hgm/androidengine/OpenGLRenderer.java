@@ -61,6 +61,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config)
     {
+      // Initially Clear the scene
       GLES32.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
       //  Cull back faces
@@ -105,6 +106,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height)
     {
+      //  We need to adjust the scene size and background on screen change
       GLES32.glClearColor(0, 1f, 0, 1 );
       GLES32.glViewport(0, 0, width, height);
       setProjectionMatrix(width, height);
@@ -127,7 +129,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     @Override
     public void onDrawFrame(GL10 gl)
     {
-        // NOTE Clearing
+        // NOTE Clearing the scene background to make sure we draw correctly
         GLES32.glClearColor(0, 1f, 0, 1 );
 
         GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT | GLES32.GL_DEPTH_BUFFER_BIT);
