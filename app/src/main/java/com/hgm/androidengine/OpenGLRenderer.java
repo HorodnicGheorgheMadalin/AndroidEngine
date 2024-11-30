@@ -18,10 +18,10 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     //  TODO Change object to system
     //private SolarSystem     mSystem = null;
 
-    private Object3D Sun = null;
-    private Object3D Earth = null;
-    private Object3D Moon = null;
-    private Object3D Ship = null;
+    private Object3D        Sun = null;
+    private Object3D        Earth = null;
+    private Object3D        Moon = null;
+    private Object3D        Ship = null;
     private Object3D[]      m_vObjects = null;
     private ShaderProgram   mShader;
     private float           mAngleInDegrades;
@@ -60,14 +60,15 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config)
     {
+      // Initially Clear the scene
       GLES32.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 
-        //  Cull back faces
-        GLES32.glEnable(GLES32.GL_CULL_FACE);
-        //  Enable depth testing
-        GLES32.glEnable(GLES32.GL_DEPTH_TEST);
-        //  Disable blending
-        GLES32.glDisable(GLES32.GL_BLEND);
+      //  Cull back faces
+      GLES32.glEnable(GLES32.GL_CULL_FACE);
+      //  Enable depth testing
+      GLES32.glEnable(GLES32.GL_DEPTH_TEST);
+      //  Disable blending
+      GLES32.glDisable(GLES32.GL_BLEND);
 
       //  Set Camera
       setViewMatrix();
@@ -77,12 +78,12 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
 
       //  Load Objects
       //  TODO( mHorodni ) Replace base type
-        //  TODO(mHorodni) Fix texture
+      //  TODO(mHorodni) Fix texture
       //mSystem = new SolarSystem(m_context);
-        Sun = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
-        Sun.mRotation = mAngleInDegrades;
-        Sun.mPosition = new V3(0, 0, 0);
-        Sun.mScale = new V3(5, 5, 5);
+      Sun = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
+      Sun.mRotation = mAngleInDegrades;
+      Sun.mPosition = new V3(0, 0, 0);
+      Sun.mScale = new V3(5, 5, 5);
       Earth = new Object3D(m_context, "Sun", R.drawable.bumpy_bricks_public_domain);
       Earth.mRotation = mAngleInDegrades;
       Earth.mPosition = new V3(50, 0, 10);
@@ -104,15 +105,16 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height)
     {
+      //  We need to adjust the scene size and background on screen change
       GLES32.glClearColor(0, 1f, 0, 1 );
       GLES32.glViewport(0, 0, width, height);
       setProjectionMatrix(width, height);
-        //  Cull back faces
-        GLES32.glEnable(GLES32.GL_CULL_FACE);
-        //  Enable depth testing
-        GLES32.glEnable(GLES32.GL_DEPTH_TEST);
-        //  Disable blending
-        GLES32.glDisable(GLES32.GL_BLEND);
+      //  Cull back faces
+      GLES32.glEnable(GLES32.GL_CULL_FACE);
+      //  Enable depth testing
+      GLES32.glEnable(GLES32.GL_DEPTH_TEST);
+      //  Disable blending
+      GLES32.glDisable(GLES32.GL_BLEND);
     }
 
   //************************************************************************************************
@@ -126,7 +128,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     @Override
     public void onDrawFrame(GL10 gl)
     {
-        // NOTE Clearing
+        // NOTE Clearing the scene background to make sure we draw correctly
         GLES32.glClearColor(0, 1f, 0, 1 );
 
         GLES32.glClear(GLES32.GL_COLOR_BUFFER_BIT | GLES32.GL_DEPTH_BUFFER_BIT);

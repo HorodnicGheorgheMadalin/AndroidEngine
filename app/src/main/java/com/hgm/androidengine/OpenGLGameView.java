@@ -36,7 +36,9 @@ public class OpenGLGameView extends GLSurfaceView
         setPreserveEGLContextOnPause(true);
         mRenderer = new OpenGLRenderer(context);
         setRenderer(mRenderer);
+        //  Only Draw the rendered scene when a change is present
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        //setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
     public boolean onTouchEvent(MotionEvent event)
@@ -61,7 +63,7 @@ public class OpenGLGameView extends GLSurfaceView
             {
                 if( null != mRenderer )
                 {
-                    //  We call the queueEvent bto call update on the OpenGL thread
+                    //  We call the queueEvent to call update on the OpenGL thread
                     queueEvent(new Runnable() {
                         @Override
                         public void run() {
@@ -90,10 +92,10 @@ public class OpenGLGameView extends GLSurfaceView
         super.setRenderer(renderer);
     }
 
-    public void setMagFilter(final int filter){
+    public void setMagFilter(){
     }
 
-    public void setMinFilter(final int filter){
+    public void setMinFilter(){
     }
 
 }

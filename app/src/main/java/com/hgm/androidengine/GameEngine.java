@@ -13,10 +13,7 @@ import android.widget.Toast;
 //                  - Fix texture for cubes.
 
 public class GameEngine extends Activity {
-  private OpenGLRenderer mRenderer;
   public static OpenGLGameView mRendererView;
-  private static int MIN_DIALOG = 1;
-  private static int MAG_DIALOG = 2;
   private static final String SHOWED_TOAST = "showed_toast";
   private static final String MIN_SETTING = "min_setting";
   private static final String MAG_SETTING = "max_setting";
@@ -132,7 +129,7 @@ public class GameEngine extends Activity {
           filter = GLES32.GL_LINEAR_MIPMAP_LINEAR;
         }
 
-        mRendererView.setMinFilter(filter);
+        mRendererView.setMinFilter();
       }
     });
   }
@@ -157,7 +154,7 @@ public class GameEngine extends Activity {
           filter = GLES32.GL_LINEAR;
         }
 
-        mRendererView.setMagFilter(filter);
+        mRendererView.setMagFilter();
       }
     });
   }
