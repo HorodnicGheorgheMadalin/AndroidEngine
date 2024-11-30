@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
+import com.hgm.solarSystem.V3;
+
 public class OpenGLGameView extends GLSurfaceView
 {
     private OpenGLRenderer mRenderer;
@@ -41,6 +43,7 @@ public class OpenGLGameView extends GLSurfaceView
 
     public boolean onTouchEvent(MotionEvent event)
     {
+        //  TODO(Madalin) : Handle gestures
         if( null != event )
         {
             float x = event.getX();
@@ -61,11 +64,12 @@ public class OpenGLGameView extends GLSurfaceView
             {
                 if( null != mRenderer )
                 {
-                    //  We call the queueEvent bto call update on the OpenGL thread
+                    //  We call the queueEvent to call update on the OpenGL thread
                     queueEvent(new Runnable() {
                         @Override
                         public void run() {
-                            //  TODO( Add Click Handler)
+                            //  For now we only want to zoom out on touch
+                            mRenderer.setViewMatrix( new V3(0, 0, 5), new V3(0,0,0), new V3(0,0,0));
                         }
                     });
                 }
