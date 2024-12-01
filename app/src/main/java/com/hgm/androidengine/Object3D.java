@@ -5,9 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES32;
 import android.opengl.GLUtils;
-import android.opengl.Matrix;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.hgm.solarSystem.V3;
 
@@ -37,12 +35,13 @@ public class Object3D
     public  int     mTextureID;
     public  int     mTextureDataHandle;
 
-    float mRotation;
+    private float mRotation;
 
-    V3 mPosition = null;
-    V3 mRotationAxis = null;
-    V3 mScale = null;
-    public int mObjectCount;
+    private V3 mPosition = null;
+    private V3 mMovement = null;
+    private V3 mRotationAxis = null;
+    private V3 mScale = null;
+    private int mObjectCount;
 
     private static final int SIZE_OF_FLOAT      = 4;
     private static final int SIZE_OF_SHORT      = 2;
@@ -83,6 +82,7 @@ public class Object3D
         initObject(context, strFileName);
         mRotation = 0.0f;
         mPosition = new V3(0, 0, 0);
+        mMovement = new V3(0, 0, 0);
         //  Rotate by default all objects on the X Axes
         mRotationAxis = new V3(0, 1, 0);
         mScale = new V3(1, 1, 1);
@@ -304,5 +304,23 @@ public class Object3D
     {
         mPosition.set(X, Y, Z);
     }
+    public void setPosition(V3 newPosition) { mPosition = newPosition; };
+    public V3 getPosition() {  return mPosition; };
 
+    public void setMovement(double X, double Y, double Z) { mMovement.set(X, Y, Z); };
+    public void setMovement(V3 newMovement) { mMovement = newMovement; };
+    public V3 getMovement() { return mMovement; };
+
+    public void updatePosition() { mPosition.add(mMovement); };
+    public void updateMovement(V3 newMovement) { mMovement.add(newMovement); updatePosition(); };
+
+    public void setRotation(float newRotation) { mRotation = newRotation; };
+    public float getRotation() { return mRotation; };
+
+    public void setRotationAxis(V3 newRotationAxis) { mRotationAxis = newRotationAxis; };
+    public V3 getRotationAxis() { return mRotationAxis; };
+
+    public void setScale(double X, double Y, double Z) { mScale.set(X, Y, Z); };
+    public void setScale(V3 newScale) { mScale = newScale; };
+    public V3 getScale() { return mScale; };
 }

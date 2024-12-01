@@ -80,22 +80,23 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       //  Load Objects
       //  TODO( mHorodni ) Replace base type
       //  TODO(mHorodni) Fix texture
+      //  TODO(mHorodni) Implement Orbits
       //mSystem = new SolarSystem(m_context);
       Sun = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
-      Sun.mRotation = mAngleInDegrades;
-      Sun.mPosition = new V3(0, 0, 0);
-      Sun.mScale = new V3(5, 5, 5);
+      Sun.setRotation(mAngleInDegrades);
+      Sun.setPosition(new V3(0, 0, 0));
+      Sun.setScale(new V3(5, 5, 5));
       Earth = new Object3D(m_context, "Sun", R.drawable.bumpy_bricks_public_domain);
-      Earth.mRotation = mAngleInDegrades;
-      Earth.mPosition = new V3(50, 0, 10);
-      Earth.mScale = new V3(2,2,2  );
+      Earth.setRotation(mAngleInDegrades);
+      Earth.setPosition(new V3(50, 0, 10));
+      Earth.setScale(new V3(2,2,2  ));
       Moon = new Object3D(m_context, "Sun", R.drawable.stone_wall_public_domain);
-      Moon.mRotation = mAngleInDegrades/2;
-      Moon.mPosition = new V3(60, 0, 15);
-      Moon.mScale = new V3(0.5,0.5,0.5);
+      Moon.setRotation(mAngleInDegrades/2);
+      Moon.setPosition(new V3(60, 0, 15));
+      Moon.setScale(new V3(0.5,0.5,0.5));
       Ship = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
-      Ship.mPosition = new V3(65, 0, 18);
-      Ship.mScale = new V3( 1, 0.1, 0.1);
+      Ship.setPosition(new V3(65, 0, 18));
+      Ship.setScale(new V3( 1, 0.1, 0.1));
       m_vObjects = new Object3D[4];
       m_vObjects[0] = Sun;
       m_vObjects[1] = Earth;
@@ -163,15 +164,17 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         //  TODO this should be done for all lights not all objects
         setLightModelMatrix(0);
 
-        //  Draw the system
+        //  Draw the system the order of operations below matter
+        //  We first want to Scale > Rotate > Translate
         //  TODO - Move the input parameters inside the draw function
         //  TODO - Load 3 independent objects and display them
         //  TODO - Make rotation part of object properties
         //  TODO - Understand OFFSET
         for(Object3D object : m_vObjects) {
-            moveObject(object.mPosition, 0);
-            scaleObject( object.mScale, 0);
-            rotateObject(mAngleInDegrades, object.mRotationAxis, 0);
+            scaleObject( object.getScale(), 0);
+            rotateObject(mAngleInDegrades, object.getRotationAxis(), 0);
+            moveObject(object.getPosition(), 0);
+            object.updateMovement(new V3(0.0001, 0.0001, 0.0001 ));
             drawTexture(object.mTextureDataHandle);
             setModelViewMatrix(0);
             setModelViewProductMatrix(0);

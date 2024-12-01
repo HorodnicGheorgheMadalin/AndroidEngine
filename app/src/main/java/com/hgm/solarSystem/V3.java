@@ -13,9 +13,12 @@ public class V3
     this.Z = Z;
   }
 
-  public V3 add(V3 addend)
+
+  public void add(V3 added)
   {
-    return new V3(X + addend.X, Y + addend.Y, Z + addend.Z );
+    X += added.X;
+    Y += added.Y;
+    Z += added.Z;
   }
 
   public void set(double X, double Y, double Z)
