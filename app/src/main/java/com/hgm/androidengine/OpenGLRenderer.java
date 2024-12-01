@@ -86,6 +86,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       Sun.setRotation(mAngleInDegrades);
       Sun.setPosition(new V3(0, 0, 0));
       Sun.setScale(new V3(5, 5, 5));
+      // TODO(mHorodni) : Init orbit components and test.
+      //Sun.setOrbitAngle();
       Earth = new Object3D(m_context, "Sun", R.drawable.bumpy_bricks_public_domain);
       Earth.setRotation(mAngleInDegrades);
       Earth.setPosition(new V3(50, 0, 10));
@@ -175,6 +177,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
             rotateObject(mAngleInDegrades, object.getRotationAxis(), 0);
             moveObject(object.getPosition(), 0);
             object.updateMovement(new V3(0.0001, 0.0001, 0.0001 ));
+            object.updateOrbit();
             drawTexture(object.mTextureDataHandle);
             setModelViewMatrix(0);
             setModelViewProductMatrix(0);

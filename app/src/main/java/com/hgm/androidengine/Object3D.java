@@ -31,6 +31,7 @@ public class Object3D
     private FloatBuffer cubeTexCoordinatesBuffer;
 
     private boolean isLoaded;
+    private boolean drawPath;
     private int     mFacesNumber;
     public  int     mTextureID;
     public  int     mTextureDataHandle;
@@ -42,6 +43,11 @@ public class Object3D
     private V3 mRotationAxis = null;
     private V3 mScale = null;
     private int mObjectCount;
+    private float mOrbitRadius;
+    private float mOrbitSpeed;
+    private float mOrbitAngle;
+    private float mPolarAngle;
+    private V3 mOrbitCenter;
 
     private static final int SIZE_OF_FLOAT      = 4;
     private static final int SIZE_OF_SHORT      = 2;
@@ -299,6 +305,49 @@ public class Object3D
 
         return textureHandle[0];
     }
+
+    public void updateOrbit()
+    {
+        mOrbitAngle += mOrbitSpeed;
+
+        if(mOrbitAngle > 360.0f)
+            mOrbitAngle -= 360.0f;
+
+        float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
+        float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
+        float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(mPolarAngle));
+
+        mPosition.set(x, y, z);
+
+        setDrawPath();
+    }
+
+    //*****************************************************************************
+    //
+    //  Method used to draw a path for object orbits
+    //
+    void setDrawPath()
+    {
+        for( int i = 0; i < 360; i++)
+        {
+            float angle = (float) (i * (Math.PI / 180.0f));
+            float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(angle)) * Math.sin(Math.toRadians(mPolarAngle)));
+            float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(angle)) * Math.sin(Math.toRadians(mPolarAngle)));
+            float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(angle)));
+        }
+    }
+
+    public void setOrbitRadius(float newOrbitRadius) { mOrbitRadius = newOrbitRadius; };
+    public float getOrbitRadius() { return mOrbitRadius; };
+
+    public void setOrbitSpeed(float newOrbitSpeed) { mOrbitSpeed = newOrbitSpeed; };
+    public float getOrbitSpeed() { return mOrbitSpeed; };
+
+    public void setOrbitAngle(float newOrbitAngle) { mOrbitAngle = newOrbitAngle; };
+    public float getOrbitAngle() { return mOrbitAngle; };
+
+    public void setOrbitCenter(V3 newOrbitCenter) { mOrbitCenter = newOrbitCenter; };
+    public V3 getOrbitCenter() { return mOrbitCenter; };
 
     public void setPosition( double X, double Y, double Z)
     {
