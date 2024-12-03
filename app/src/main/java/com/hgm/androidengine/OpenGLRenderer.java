@@ -84,21 +84,31 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       //mSystem = new SolarSystem(m_context);
       Sun = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
       Sun.setRotation(mAngleInDegrades);
-      Sun.setPosition(new V3(0, 0, 0));
+      Sun.setPosition(new V3(0.001, 0.001, 0.001));
       Sun.setScale(new V3(5, 5, 5));
-      // TODO(mHorodni) : Init orbit components and test.
-      //Sun.setOrbitAngle();
+      Sun.setOrbitAngle(0.001f);
+      Sun.setOrbitCenter( new V3(0, 0, 0));
+      Sun.setOrbitSpeed(0.001f);
       Earth = new Object3D(m_context, "Sun", R.drawable.bumpy_bricks_public_domain);
       Earth.setRotation(mAngleInDegrades);
       Earth.setPosition(new V3(50, 0, 10));
       Earth.setScale(new V3(2,2,2  ));
+      Earth.setOrbitAngle(45);
+      Earth.setOrbitSpeed(0.2f);
+      Earth.setOrbitCenter(Sun.getPosition());
       Moon = new Object3D(m_context, "Sun", R.drawable.stone_wall_public_domain);
       Moon.setRotation(mAngleInDegrades/2);
       Moon.setPosition(new V3(60, 0, 15));
       Moon.setScale(new V3(0.5,0.5,0.5));
+      Moon.setOrbitCenter(Earth.getPosition());
+      Moon.setOrbitAngle(45);
+      Moon.setOrbitSpeed(0.2f);
       Ship = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
       Ship.setPosition(new V3(65, 0, 18));
       Ship.setScale(new V3( 1, 0.1, 0.1));
+      Ship.setOrbitCenter( new V3(0, 0, 0));
+      Ship.setOrbitSpeed(0.001f);
+      Ship.setOrbitAngle(0.001f);
       m_vObjects = new Object3D[4];
       m_vObjects[0] = Sun;
       m_vObjects[1] = Earth;
@@ -176,7 +186,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
             scaleObject( object.getScale(), 0);
             rotateObject(mAngleInDegrades, object.getRotationAxis(), 0);
             moveObject(object.getPosition(), 0);
-            object.updateMovement(new V3(0.0001, 0.0001, 0.0001 ));
+            //  TODO(mHorodni) : we want the movement to be only orbits for now.
+            //object.updateMovement(new V3(0.0001, 0.0001, 0.0001 ));
             object.updateOrbit();
             drawTexture(object.mTextureDataHandle);
             setModelViewMatrix(0);

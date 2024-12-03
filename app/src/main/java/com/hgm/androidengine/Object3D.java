@@ -308,18 +308,22 @@ public class Object3D
 
     public void updateOrbit()
     {
-        mOrbitAngle += mOrbitSpeed;
+        //  Some objects may not fallow an orbit
+        //  TODO(mHorodni) : See if this is true for any object
+        if(!(mOrbitCenter.GetX() == 0) && (mOrbitCenter.GetY() == 0) && (mOrbitCenter.GetZ() == 0)) {
+            mOrbitAngle += mOrbitSpeed;
 
-        if(mOrbitAngle > 360.0f)
-            mOrbitAngle -= 360.0f;
+            if (mOrbitAngle > 360.0f)
+                mOrbitAngle -= 360.0f;
 
-        float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
-        float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
-        float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(mPolarAngle));
+            float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
+            float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
+            float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(mPolarAngle)));
 
-        mPosition.set(x, y, z);
+            mPosition.set(x, y, z);
 
-        setDrawPath();
+            setDrawPath();
+        }
     }
 
     //*****************************************************************************
