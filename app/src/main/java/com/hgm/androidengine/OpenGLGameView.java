@@ -70,8 +70,8 @@ public class OpenGLGameView extends GLSurfaceView
                     queueEvent(new Runnable() {
                         @Override
                         public void run() {
-                            //  For now we only want to zoom out on touch
-                            mRenderer.setViewMatrix( new V3(0, 0, 5), new V3(0,0,0), new V3(0,0,0));
+                            //  For now we only want to zoom out the camera on touch
+                            mRenderer.setViewMatrix( new V3(-5, -1, 0), new V3(0,0,0), new V3(0,0,0));
                         }
                     });
                 }

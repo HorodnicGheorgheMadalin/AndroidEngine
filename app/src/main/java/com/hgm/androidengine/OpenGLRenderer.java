@@ -5,6 +5,7 @@ import android.opengl.GLES32;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.hgm.solarSystem.V3;
 
@@ -44,7 +45,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
     private final float[] mLightModelMatrix           = new float[MATRIX_SIZE];
 
     //  The light position with a fourth filler coordinate needed for multiplication with transformation marice
-    private final float[] mLightPosInModelSpace   = new float[] { 0.0f, 0.0f, 0.0f, 1.0f};
+    private final float[] mLightPosInModelSpace   = new float[] { 0.0f, 0.0f, 10.0f, 1.0f};
     private final float[] mLightPosInWorldSpace   = new float[4];
     private final float[] mLightPosInEyeSpace     = new float[4];
 
@@ -84,36 +85,50 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
       //mSystem = new SolarSystem(m_context);
       Sun = new Object3D(m_context, "Sun", R.drawable.rusty_iron_texture);
       Sun.setRotation(mAngleInDegrades);
-      Sun.setPosition(new V3(0.001, 0.001, 0.001));
+      Sun.setPosition(new V3(0.0, 0.0, 0.0));
       Sun.setScale(new V3(5, 5, 5));
-      Sun.setOrbitAngle(0.001f);
+      Sun.setOrbitAngle(0.000f);
       Sun.setOrbitCenter( new V3(0, 0, 0));
-      Sun.setOrbitSpeed(0.001f);
+      Sun.setOrbitSpeed(0.000f);
       Earth = new Object3D(m_context, "Sun", R.drawable.bumpy_bricks_public_domain);
       Earth.setRotation(mAngleInDegrades);
-      Earth.setPosition(new V3(50, 0, 10));
+      Earth.setPosition(new V3(50, 0, 0));
       Earth.setScale(new V3(2,2,2  ));
       Earth.setOrbitAngle(45);
-      Earth.setOrbitSpeed(0.2f);
+      Earth.setOrbitSpeed(0.5f);
       Earth.setOrbitCenter(Sun.getPosition());
+      Earth.setOrbitRadius(50.0f);
+      Earth.setPoarAngle(0.001f);
       Moon = new Object3D(m_context, "Sun", R.drawable.stone_wall_public_domain);
       Moon.setRotation(mAngleInDegrades/2);
-      Moon.setPosition(new V3(60, 0, 15));
+      Moon.setPosition(new V3(60, 0, 0));
+      //  NOTE: (Madalin) Orbit should fallow coordinates
+      //  60, 0, 0
+      //  50, 0, -10
+      //  40, 0, 0
+      //  50, 0, 10
       Moon.setScale(new V3(0.5,0.5,0.5));
       Moon.setOrbitCenter(Earth.getPosition());
       Moon.setOrbitAngle(45);
-      Moon.setOrbitSpeed(0.2f);
+      Moon.setOrbitSpeed(0.5f);
+      Moon.setOrbitRadius(10.0f);
+      Moon.setPoarAngle(0.000f);
       Ship = new Object3D(m_context, "Ship", R.drawable.rusty_iron_texture);
       Ship.setPosition(new V3(65, 0, 18));
       Ship.setScale(new V3( 1, 0.1, 0.1));
       Ship.setOrbitCenter( new V3(0, 0, 0));
-      Ship.setOrbitSpeed(0.001f);
-      Ship.setOrbitAngle(0.001f);
-      m_vObjects = new Object3D[4];
+      Ship.setOrbitSpeed(0.000f);
+      Ship.setOrbitAngle(0.000f);
+//      m_vObjects = new Object3D[4];
+//      m_vObjects[0] = Sun;
+//      m_vObjects[1] = Earth;
+//      m_vObjects[2] = Moon;
+//      m_vObjects[3] = Ship;
+      m_vObjects = new Object3D[2];
       m_vObjects[0] = Sun;
       m_vObjects[1] = Earth;
-      m_vObjects[2] = Moon;
-      m_vObjects[3] = Ship;
+      //m_vObjects[2] = Moon;
+      //m_vObjects[3] = Ship;
     }
 
     @Override
@@ -182,19 +197,18 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
         //  TODO - Load 3 independent objects and display them
         //  TODO - Make rotation part of object properties
         //  TODO - Understand OFFSET
-        for(Object3D object : m_vObjects) {
-            scaleObject( object.getScale(), 0);
-            rotateObject(mAngleInDegrades, object.getRotationAxis(), 0);
-            moveObject(object.getPosition(), 0);
-            //  TODO(mHorodni) : we want the movement to be only orbits for now.
-            //object.updateMovement(new V3(0.0001, 0.0001, 0.0001 ));
-            object.updateOrbit();
-            drawTexture(object.mTextureDataHandle);
-            setModelViewMatrix(0);
-            setModelViewProductMatrix(0);
-            Earth.draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
-            GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
-            GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
+        for(int nObjectIndex = 0; nObjectIndex < m_vObjects.length; nObjectIndex++) {
+          scaleObject( m_vObjects[nObjectIndex].getScale(), nObjectIndex);
+          rotateObject(mAngleInDegrades, m_vObjects[nObjectIndex].getRotationAxis(), nObjectIndex);
+          setModelMatrix(m_vObjects[nObjectIndex].getPosition(), nObjectIndex);
+          //moveObject(m_vObjects[nObjectIndex].getPosition(), 0);
+          m_vObjects[nObjectIndex].updateOrbit();
+          drawTexture(m_vObjects[nObjectIndex].mTextureDataHandle);
+          setModelViewMatrix(nObjectIndex);
+          setModelViewProductMatrix(nObjectIndex);
+          m_vObjects[nObjectIndex].draw(mPositionHandle, mColorHandle, mNormalHandle, mTextureCoordinateHandle);
+          GLES32.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, mModelViewMatrix, 0);
+          GLES32.glUniformMatrix4fv(mModelViewProductMatrixHandle, 1, false, mModelViewProjectionMatrix, 0);
         }
 
         //  Pass in the light position
@@ -283,7 +297,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer
   }
 
   private void rotateObject(float angle, V3 rotationAxis, int nIndex){
-      //Matrix.setIdentityM(mModelMatrix, nIndex);
+      Matrix.setIdentityM(mModelMatrix, nIndex);
       Matrix.rotateM(mModelMatrix, nIndex, angle + mDeltaY, (float)rotationAxis.GetX(), (float)rotationAxis.GetY(), (float)rotationAxis.GetZ());
   }
 

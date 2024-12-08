@@ -31,6 +31,7 @@ public class Object3D
     private FloatBuffer cubeTexCoordinatesBuffer;
 
     private boolean isLoaded;
+    private String  mName;
     private boolean drawPath;
     private int     mFacesNumber;
     public  int     mTextureID;
@@ -86,6 +87,7 @@ public class Object3D
         isLoaded = false;
         String strFileName = strName + FILE_EXTENSION_3D;
         initObject(context, strFileName);
+        mName = strName;
         mRotation = 0.0f;
         mPosition = new V3(0, 0, 0);
         mMovement = new V3(0, 0, 0);
@@ -309,21 +311,19 @@ public class Object3D
     public void updateOrbit()
     {
         //  Some objects may not fallow an orbit
-        //  TODO(mHorodni) : See if this is true for any object
-        if(!(mOrbitCenter.GetX() == 0) && (mOrbitCenter.GetY() == 0) && (mOrbitCenter.GetZ() == 0)) {
-            mOrbitAngle += mOrbitSpeed;
+        mOrbitAngle += mOrbitSpeed;
 
-            if (mOrbitAngle > 360.0f)
-                mOrbitAngle -= 360.0f;
+        if (mOrbitAngle > 360.0f)
+            mOrbitAngle -= 360.0f;
 
-            float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
-            float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
-            float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(mPolarAngle)));
+        float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
+        float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
+        float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(mPolarAngle)));
 
-            mPosition.set(x, y, z);
+        Log.d("SoL", "Object " + mName + " Old Pos : " + "[" + mPosition.GetX() + "," + mPosition.GetY() + "," + mPosition.GetY() + "] -> ["   + x + "," + y + "," + z +"]");
+        mPosition.set(x, y, z);
 
-            setDrawPath();
-        }
+        setDrawPath();
     }
 
     //*****************************************************************************
@@ -332,12 +332,12 @@ public class Object3D
     //
     void setDrawPath()
     {
-        for( int i = 0; i < 360; i++)
-        {
+        for( int i = 0; i < 360; i++) {
             float angle = (float) (i * (Math.PI / 180.0f));
             float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(angle)) * Math.sin(Math.toRadians(mPolarAngle)));
             float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(angle)) * Math.sin(Math.toRadians(mPolarAngle)));
             float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(angle)));
+            //  TODO need to accualy display the path.
         }
     }
 
@@ -376,4 +376,7 @@ public class Object3D
     public void setScale(double X, double Y, double Z) { mScale.set(X, Y, Z); };
     public void setScale(V3 newScale) { mScale = newScale; };
     public V3 getScale() { return mScale; };
+
+    public void setPoarAngle( float angle) { mPolarAngle = angle; };
+    public float getPolarAngle() { return mPolarAngle; };
 }
