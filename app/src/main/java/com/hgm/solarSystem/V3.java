@@ -13,7 +13,6 @@ public class V3
     this.Z = Z;
   }
 
-
   public void add(V3 added)
   {
     X += added.X;

@@ -76,7 +76,7 @@ public class Object3D
     private static final int Y_INDEX            = 2;
     private static final int Z_INDEX            = 3;
 
-    private static final int N_INDEX            =4;
+    private static final int N_INDEX            = 4;
 
     private static final String FILE_EXTENSION_3D = ".obj";
 
@@ -316,6 +316,7 @@ public class Object3D
         if (mOrbitAngle > 360.0f)
             mOrbitAngle -= 360.0f;
 
+        //  TODO(Madalin) - See why the code below updates object position but the rendered dose not get that update.
         float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
         float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(mOrbitAngle)) * Math.sin(Math.toRadians(mPolarAngle)));
         float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(mPolarAngle)));
@@ -337,7 +338,7 @@ public class Object3D
             float x = (float) (mOrbitCenter.GetX() + mOrbitRadius * Math.cos(Math.toRadians(angle)) * Math.sin(Math.toRadians(mPolarAngle)));
             float y = (float) (mOrbitCenter.GetY() + mOrbitRadius * Math.sin(Math.toRadians(angle)) * Math.sin(Math.toRadians(mPolarAngle)));
             float z = (float) (mOrbitCenter.GetZ() + mOrbitRadius * Math.cos(Math.toRadians(angle)));
-            //  TODO need to accualy display the path.
+            //  TODO need to actually display the path.
         }
     }
 
@@ -377,6 +378,6 @@ public class Object3D
     public void setScale(V3 newScale) { mScale = newScale; };
     public V3 getScale() { return mScale; };
 
-    public void setPoarAngle( float angle) { mPolarAngle = angle; };
+    public void setPolarAngle( float angle) { mPolarAngle = angle; };
     public float getPolarAngle() { return mPolarAngle; };
 }

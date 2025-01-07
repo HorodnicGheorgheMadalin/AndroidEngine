@@ -22,7 +22,7 @@ public class SoL extends AppCompatActivity implements View.OnClickListener
     //  Holds the game view.
     private int m_LoginAttempts = 0;
 
-    private static final int MAX_LOGIN_ATTEMPTS = 3;
+    private static final int MAX_LOGIN_ATTEMPTS = 10;
     private static final String TAG = "SoL";
     private static final String SHOWED_TOAST = "showed_toast";
 
