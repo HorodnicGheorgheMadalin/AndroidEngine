@@ -10,12 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import static android.content.ContentValues.TAG;
-
 class ShaderProgram
 {
+  private static final String TAG = "ShaderProgram";
   int m_programHandle;
-  private final int m_pointProgramHandle;
+  private int m_pointProgramHandle;
 
 
   ShaderProgram(Context context)
@@ -35,6 +34,16 @@ class ShaderProgram
       m_pointProgramHandle = createAndLinkProgram( m_pointVertexShaderHandle, m_pointFragmentShaderHandle, new String[]{ "a_Position" });
     }
 
+    ShaderProgram(Context context, int vertexShaderResId, int fragmentShaderResId)
+    {
+        InputStream vertexShaderStream = context.getResources().openRawResource(vertexShaderResId);
+        InputStream fragmentShaderStream = context.getResources().openRawResource(fragmentShaderResId);
+        int vertexShaderHandle = setUpShader(GLES32.GL_VERTEX_SHADER, vertexShaderStream);
+        int fragmentShaderHandle = setUpShader(GLES32.GL_FRAGMENT_SHADER, fragmentShaderStream);
+        m_programHandle = createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle, new String[]{"a_Position"});
+        m_pointProgramHandle = 0; // Not used for line shader
+    }
+
     private int setUpShader( final int shaderType, InputStream shaderSource )
     {
         int shaderHandle = GLES32.glCreateShader(shaderType);
@@ -48,6 +57,12 @@ class ShaderProgram
             } catch (IOException e)
             {
                 e.printStackTrace();
+            } finally {
+              try {
+                shaderSource.close();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
             }
 
             GLES32.glShaderSource(shaderHandle, shaderCode);
